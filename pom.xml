@@ -5,7 +5,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>core</module>
-        <module>base</module>
         <module>common</module>
         <module>gateway</module>
     </modules>

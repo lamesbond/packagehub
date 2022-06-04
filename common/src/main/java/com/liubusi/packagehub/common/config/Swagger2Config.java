@@ -44,20 +44,20 @@ public class Swagger2Config {
     private ApiInfo adminApiInfo(){
 
         return new ApiInfoBuilder()
-                .title("尚融宝后台管理系统-API文档")
-                .description("本文档描述了尚融宝后台管理系统接口")
+                .title("packagehub后台管理系统-API文档")
+                .description("本文档描述了packagehub后台管理系统接口")
                 .version("1.0")
-                .contact(new Contact("liubusi", "http://atguigu.com", "141819@qq.com"))
+                .contact(new Contact("liubusi", "http://liubusi.top", "1418190515@qq.com"))
                 .build();
     }
 
     private ApiInfo webApiInfo(){
 
         return new ApiInfoBuilder()
-                .title("尚融宝网站-API文档")
-                .description("本文档描述了尚融宝网站各模块系统接口")
+                .title("packagehub网站-API文档")
+                .description("本文档描述了packagehub网站各模块系统接口")
                 .version("1.0")
-                .contact(new Contact("liubusi", "http://atguigu.com", "141819@qq.com"))
+                .contact(new Contact("liubusi", "http://liubusi.top", "1418190515@qq.com"))
                 .build();
     }
 }
