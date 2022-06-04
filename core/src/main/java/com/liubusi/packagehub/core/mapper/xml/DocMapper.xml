@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liubusi.packagehub.core.mapper.DocMapper">
+    <insert id="insertBatch">
+        insert into doc (
+        id ,
+        parent_id ,
+        name ,
+        value ,
+        dict_code
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.id} ,
+            #{item.parentId} ,
+            #{item.name} ,
+            #{item.value} ,
+            #{item.dictCode}
+            )
+        </foreach>
+    </insert>
+
+    <select id="getDocMenu" resultType="com.liubusi.packagehub.core.pojo.vo.DocMenuVO">
+        SELECT T2.level_, T3.*
+        FROM(
+                SELECT @codes as _ids,
+			( SELECT @codes := GROUP_CONCAT(id)
+				FROM doc
+				 WHERE FIND_IN_SET(parent_id, @codes)
+			) as T1,
+		  @l := @l+1 as level_
+                FROM doc,
+                    (SELECT @codes := #{id}, @l := -1 ) T4
+                WHERE @codes IS NOT NULL
+            ) T2, doc T3
+        WHERE FIND_IN_SET(T3.id, T2._ids)
+          and id != #{id}
+        ORDER BY level_, id
+        ;
+    </select>
+</mapper>

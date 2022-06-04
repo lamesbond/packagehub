@@ -4,7 +4,7 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Data;
 
 @Data
-public class ExcelDictDTO {
+public class ExcelDocDTO {
 
     @ExcelProperty("id")
     private Long id;

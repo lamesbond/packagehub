@@ -7,7 +7,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.80.170:8848 # nacos服务地址
+        server-addr: 192.168.80.141:8848 # nacos服务地址
     gateway:
       discovery:
         locator:

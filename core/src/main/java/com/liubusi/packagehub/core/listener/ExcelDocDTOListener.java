@@ -2,8 +2,8 @@ package com.liubusi.packagehub.core.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import com.liubusi.packagehub.core.mapper.DictMapper;
-import com.liubusi.packagehub.core.pojo.dto.ExcelDictDTO;
+import com.liubusi.packagehub.core.mapper.DocMapper;
+import com.liubusi.packagehub.core.pojo.dto.ExcelDocDTO;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,19 +13,19 @@ import java.util.List;
 @Slf4j
 //@AllArgsConstructor //全参
 @NoArgsConstructor //无参
-public class ExcelDictDTOListener extends AnalysisEventListener<ExcelDictDTO> {
+public class ExcelDocDTOListener extends AnalysisEventListener<ExcelDocDTO> {
 
     /**
      * 每隔5条存储数据库，实际使用中可以3000条，然后清理list ，方便内存回收
      */
     private static final int BATCH_COUNT = 5;
-    List<ExcelDictDTO> list = new ArrayList();
+    List<ExcelDocDTO> list = new ArrayList();
 
-    private DictMapper dictMapper;
+    private DocMapper docMapper;
 
     //传入mapper对象
-    public ExcelDictDTOListener(DictMapper dictMapper) {
-        this.dictMapper = dictMapper;
+    public ExcelDocDTOListener(DocMapper docMapper) {
+        this.docMapper = docMapper;
     }
 
     /**
@@ -34,7 +34,7 @@ public class ExcelDictDTOListener extends AnalysisEventListener<ExcelDictDTO> {
      * @param context
      */
     @Override
-    public void invoke(ExcelDictDTO data, AnalysisContext context) {
+    public void invoke(ExcelDocDTO data, AnalysisContext context) {
         log.info("解析到一条记录: {}", data);
         list.add(data);
         // 达到BATCH_COUNT了，需要去存储一次数据库，防止数据几万条数据在内存，容易OOM
@@ -60,7 +60,7 @@ public class ExcelDictDTOListener extends AnalysisEventListener<ExcelDictDTO> {
      */
     private void saveData() {
         log.info("{}条数据，开始存储数据库！", list.size());
-        dictMapper.insertBatch(list);  //批量插入
+        docMapper.insertBatch(list);  //批量插入
         log.info("存储数据库成功！");
     }
 }

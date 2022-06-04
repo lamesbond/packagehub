@@ -2,10 +2,11 @@ package com.liubusi.packagehub.core.service.impl;
 
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.liubusi.packagehub.core.listener.ExcelDictDTOListener;
-import com.liubusi.packagehub.core.pojo.dto.ExcelDictDTO;
+import com.liubusi.packagehub.core.listener.ExcelDocDTOListener;
+import com.liubusi.packagehub.core.pojo.dto.ExcelDocDTO;
 import com.liubusi.packagehub.core.pojo.entity.Doc;
-import com.liubusi.packagehub.core.mapper.DictMapper;
+import com.liubusi.packagehub.core.mapper.DocMapper;
+import com.liubusi.packagehub.core.pojo.vo.DocMenuVO;
 import com.liubusi.packagehub.core.service.DocService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -33,30 +34,33 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @Slf4j
-public class DocServiceImpl extends ServiceImpl<DictMapper, Doc> implements DocService {
+public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocService {
 
     @Resource
     private RedisTemplate redisTemplate;
 
+    @Resource
+    private DocMapper docMapper;
+
     @Transactional(rollbackFor = {Exception.class})
     @Override
     public void importData(InputStream inputStream) {
-        EasyExcel.read(inputStream, ExcelDictDTO.class, new ExcelDictDTOListener(baseMapper)).sheet().doRead();
+        EasyExcel.read(inputStream, ExcelDocDTO.class, new ExcelDocDTOListener(baseMapper)).sheet().doRead();
         log.info("importData finished");
     }
 
     @Override
-    public List<ExcelDictDTO> listDictData() {
+    public List<ExcelDocDTO> listDocData() {
         List<Doc> docList = baseMapper.selectList(null);
-        //创建ExcelDictDTO列表，将Dict列表转换成ExcelDictDTO列表
-        ArrayList<ExcelDictDTO> excelDictDTOList = new ArrayList<>(docList.size());
-        docList.forEach(dict -> {
+        //创建ExceldocDTO列表，将doc列表转换成ExceldocDTO列表
+        ArrayList<ExcelDocDTO> exceldocDTOList = new ArrayList<>(docList.size());
+        docList.forEach(doc -> {
 
-            ExcelDictDTO excelDictDTO = new ExcelDictDTO();
-            BeanUtils.copyProperties(dict, excelDictDTO);
-            excelDictDTOList.add(excelDictDTO);
+            ExcelDocDTO exceldocDTO = new ExcelDocDTO();
+            BeanUtils.copyProperties(doc, exceldocDTO);
+            exceldocDTOList.add(exceldocDTO);
         });
-        return excelDictDTOList;
+        return exceldocDTOList;
     }
 
     @Override
@@ -75,9 +79,9 @@ public class DocServiceImpl extends ServiceImpl<DictMapper, Doc> implements DocS
 
         log.info("从数据库中取值");
         docList = baseMapper.selectList(new QueryWrapper<Doc>().eq("parent_id", parentId));
-        docList.forEach(dict -> {
-            boolean hasChildren = this.hasChildren(dict.getId());
-            dict.setHasChildren(hasChildren);
+        docList.forEach(doc -> {
+            boolean hasChildren = this.hasChildren(doc.getId());
+            doc.setHasChildren(hasChildren);
         });
 
         //将数据存入redis
@@ -92,26 +96,26 @@ public class DocServiceImpl extends ServiceImpl<DictMapper, Doc> implements DocS
     }
 
     @Override
-    public List<Doc> findByDictCode(String dictCode) {
-        QueryWrapper<Doc> dictQueryWrapper = new QueryWrapper<>();
-        dictQueryWrapper.eq("dict_code", dictCode);
-        Doc doc = baseMapper.selectOne(dictQueryWrapper);
+    public List<Doc> findByDocCode(String docCode) {
+        QueryWrapper<Doc> docQueryWrapper = new QueryWrapper<>();
+        docQueryWrapper.eq("doc_code", docCode);
+        Doc doc = baseMapper.selectOne(docQueryWrapper);
         return this.listByParentId(doc.getId());
     }
 
     @Override
-    public String getNameByParentDictCodeAndValue(String dictCode, Integer value) {
-        QueryWrapper<Doc> dictQueryWrapper = new QueryWrapper<>();
-        dictQueryWrapper.eq("dict_code", dictCode);
-        Doc parentDoc = baseMapper.selectOne(dictQueryWrapper);
+    public String getNameByParentDocCodeAndValue(String docCode, Integer value) {
+        QueryWrapper<Doc> docQueryWrapper = new QueryWrapper<>();
+        docQueryWrapper.eq("doc_code", docCode);
+        Doc parentDoc = baseMapper.selectOne(docQueryWrapper);
 
         if (parentDoc == null) {
             return "";
         }
 
-        dictQueryWrapper = new QueryWrapper<>();
-        dictQueryWrapper.eq("parent_id", parentDoc.getParentId()).eq("value", value);
-        Doc doc = baseMapper.selectOne(dictQueryWrapper);
+        docQueryWrapper = new QueryWrapper<>();
+        docQueryWrapper.eq("parent_id", parentDoc.getParentId()).eq("value", value);
+        Doc doc = baseMapper.selectOne(docQueryWrapper);
 
         if (doc == null) {
             return "";
@@ -121,25 +125,22 @@ public class DocServiceImpl extends ServiceImpl<DictMapper, Doc> implements DocS
     }
 
     @Override
-    public Map<String, String> getDocDetail(Long id) {
-        //查询标的对象
+    public String getDocContent(Long id) {
         Doc doc = baseMapper.selectById(id);
-        //组装数据
-        String docTitle = doc.getDocTitle();
         String docContent = doc.getDocContent();
+        return docContent;
+    }
 
-        //组装数据
-        Map<String, String> result = new HashMap<>();
-        result.put("docTitle", docTitle);
-        result.put("docContent", docContent);
-
+    @Override
+    public List<DocMenuVO> getDocMenu(Long id) {
+        List<DocMenuVO> result = docMapper.getDocMenu(id);
         return result;
     }
 
     private boolean hasChildren(Long id) {
-        QueryWrapper<Doc> dictQueryWrapper = new QueryWrapper<>();
-        dictQueryWrapper.eq("parent_id", id);
-        Integer count = baseMapper.selectCount(dictQueryWrapper);
+        QueryWrapper<Doc> docQueryWrapper = new QueryWrapper<>();
+        docQueryWrapper.eq("parent_id", id);
+        Integer count = baseMapper.selectCount(docQueryWrapper);
         if (count.intValue() > 0) {
             return true;
         }

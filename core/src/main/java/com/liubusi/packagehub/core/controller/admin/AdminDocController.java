@@ -4,8 +4,9 @@ import com.alibaba.excel.EasyExcel;
 import com.liubusi.packagehub.common.exception.BusinessException;
 import com.liubusi.packagehub.common.result.ResponseEnum;
 import com.liubusi.packagehub.common.result.Result;
-import com.liubusi.packagehub.core.pojo.dto.ExcelDictDTO;
+import com.liubusi.packagehub.core.pojo.dto.ExcelDocDTO;
 import com.liubusi.packagehub.core.pojo.entity.Doc;
+import com.liubusi.packagehub.core.pojo.vo.DocMenuVO;
 import com.liubusi.packagehub.core.service.DocService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,7 +61,7 @@ public class AdminDocController {
         response.setCharacterEncoding("utf-8");
         String fileName = URLEncoder.encode("mydict", "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), ExcelDictDTO.class).sheet("数据字典").doWrite(docService.listDictData());
+        EasyExcel.write(response.getOutputStream(), ExcelDocDTO.class).sheet("数据字典").doWrite(docService.listDocData());
     }
 
     @ApiOperation("根据上级ID获取子节点数据列表")
@@ -76,8 +77,17 @@ public class AdminDocController {
     public Result show(
             @ApiParam(value = "文档id", required = true)
             @PathVariable Long id) {
-        Map<String, String> result = docService.getDocDetail(id);
-        return Result.ok().data("docDetail", result);
+        String result = docService.getDocContent(id);
+        return Result.ok().data("docContent", result);
+    }
+
+    @ApiOperation("根据文档ID获取文档目录")
+    @GetMapping("/showMenu/{id}")
+    public Result showMenu(
+            @ApiParam(value = "文档id", required = true)
+            @PathVariable Long id) {
+        List<DocMenuVO> result = docService.getDocMenu(id);
+        return Result.ok().data("docMenu", result);
     }
 
 }

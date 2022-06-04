@@ -1,8 +1,9 @@
 package com.liubusi.packagehub.core.service;
 
-import com.liubusi.packagehub.core.pojo.dto.ExcelDictDTO;
+import com.liubusi.packagehub.core.pojo.dto.ExcelDocDTO;
 import com.liubusi.packagehub.core.pojo.entity.Doc;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.liubusi.packagehub.core.pojo.vo.DocMenuVO;
 
 import java.io.InputStream;
 import java.util.List;
@@ -19,13 +20,15 @@ import java.util.Map;
 public interface DocService extends IService<Doc> {
     void importData(InputStream inputStream);
 
-    List<ExcelDictDTO> listDictData();
+    List<ExcelDocDTO> listDocData();
 
     List<Doc> listByParentId(Long parentId);
 
-    List<Doc> findByDictCode(String dictCode);
+    List<Doc> findByDocCode(String dictCode);
 
-    String getNameByParentDictCodeAndValue(String dictCode, Integer value);
+    String getNameByParentDocCodeAndValue(String docCode, Integer value);
 
-    Map<String, String> getDocDetail(Long id);
+    String getDocContent(Long id);
+
+    List<DocMenuVO> getDocMenu(Long id);
 }

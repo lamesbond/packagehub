@@ -1,8 +1,9 @@
 package com.liubusi.packagehub.core.mapper;
 
-import com.liubusi.packagehub.core.pojo.dto.ExcelDictDTO;
+import com.liubusi.packagehub.core.pojo.dto.ExcelDocDTO;
 import com.liubusi.packagehub.core.pojo.entity.Doc;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.liubusi.packagehub.core.pojo.vo.DocMenuVO;
 
 import java.util.List;
 
@@ -14,8 +15,10 @@ import java.util.List;
  * @author liubusi
  * @since 2022-05-21
  */
-public interface DictMapper extends BaseMapper<Doc> {
+public interface DocMapper extends BaseMapper<Doc> {
 
-    void insertBatch(List<ExcelDictDTO> list);
+    void insertBatch(List<ExcelDocDTO> list);
+
+    List<DocMenuVO> getDocMenu(Long id);
 
 }

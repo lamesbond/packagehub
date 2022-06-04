@@ -28,7 +28,7 @@ public class DictController {
     public Result findByDictCode(
             @ApiParam(value = "节点编码", required = true)
             @PathVariable String dictCode) {
-        List<Doc> list = dictService.findByDictCode(dictCode);
+        List<Doc> list = dictService.findByDocCode(dictCode);
         return Result.ok().data("dictList", list);
     }
 
