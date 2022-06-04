@@ -134,7 +134,19 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
     @Override
     public List<DocMenuVO> getDocMenu(Long id) {
         List<DocMenuVO> result = docMapper.getDocMenu(id);
-        return result;
+        List<DocMenuVO> finalResult = new ArrayList<>();
+
+        for (DocMenuVO firstDocMenuVO : result) {
+            for (DocMenuVO secondDocMenuVO : result) {
+                if (firstDocMenuVO.getId().equals(secondDocMenuVO.getParentId())) {
+                    firstDocMenuVO.getChildren().add(secondDocMenuVO);
+                }
+            }
+            if (firstDocMenuVO.getLevel_()==1L) {
+                finalResult.add(firstDocMenuVO);
+            }
+        }
+        return finalResult;
     }
 
     private boolean hasChildren(Long id) {

@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @ApiModel(description="文档目录对象")
@@ -18,6 +20,9 @@ public class DocMenuVO {
     @ApiModelProperty(value = "id")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+
+    @TableField(exist = false)
+    private List<DocMenuVO> children = new ArrayList<>();
 
     @ApiModelProperty(value = "查询结果定义的等级")
     private Long level_;
@@ -39,4 +44,5 @@ public class DocMenuVO {
 
     @TableField(exist = false)
     private boolean hasChildren;
+
 }
