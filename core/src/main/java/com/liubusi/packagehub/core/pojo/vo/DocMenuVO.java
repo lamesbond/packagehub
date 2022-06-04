@@ -25,7 +25,7 @@ public class DocMenuVO {
     private List<DocMenuVO> children = new ArrayList<>();
 
     @ApiModelProperty(value = "查询结果定义的等级")
-    private Long level_;
+    private Long level;
 
     @ApiModelProperty(value = "上级id")
     private Long parentId;

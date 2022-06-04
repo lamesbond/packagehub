@@ -21,21 +21,21 @@
     </insert>
 
     <select id="getDocMenu" resultType="com.liubusi.packagehub.core.pojo.vo.DocMenuVO">
-        SELECT T2.level_, T3.*
+        SELECT T2.level, T3.*
         FROM(
                 SELECT @codes as _ids,
 			( SELECT @codes := GROUP_CONCAT(id)
 				FROM doc
 				 WHERE FIND_IN_SET(parent_id, @codes)
 			) as T1,
-		  @l := @l+1 as level_
+		  @l := @l+1 as level
                 FROM doc,
                     (SELECT @codes := #{id}, @l := -1 ) T4
                 WHERE @codes IS NOT NULL
             ) T2, doc T3
         WHERE FIND_IN_SET(T3.id, T2._ids)
           and id != #{id}
-        ORDER BY level_, id
+        ORDER BY level, id
         ;
     </select>
 </mapper>

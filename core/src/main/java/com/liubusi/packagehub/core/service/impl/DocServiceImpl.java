@@ -142,7 +142,7 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
                     firstDocMenuVO.getChildren().add(secondDocMenuVO);
                 }
             }
-            if (firstDocMenuVO.getLevel_()==1L) {
+            if (firstDocMenuVO.getLevel()==1L) {
                 finalResult.add(firstDocMenuVO);
             }
         }
