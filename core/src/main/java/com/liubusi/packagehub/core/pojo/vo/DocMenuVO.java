@@ -3,6 +3,8 @@ package com.liubusi.packagehub.core.pojo.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @ApiModel(description="文档目录对象")
 public class DocMenuVO {
@@ -21,28 +24,17 @@ public class DocMenuVO {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @TableField(exist = false)
-    private List<DocMenuVO> children = new ArrayList<>();
-
-    @ApiModelProperty(value = "查询结果定义的等级")
-    private Long level;
-
+    @JsonIgnore
     @ApiModelProperty(value = "上级id")
     private Long parentId;
 
     @ApiModelProperty(value = "标题")
     private String docTitle;
 
-    @ApiModelProperty(value = "内容")
-    private String docContent;
-
-    @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
-
-    @ApiModelProperty(value = "更新时间")
-    private LocalDateTime updateTime;
+    @ApiModelProperty(value = "是否在编辑状态")
+    private String isEdit = "false";
 
     @TableField(exist = false)
-    private boolean hasChildren;
+    private List<DocMenuVO> children = new ArrayList<>();
 
 }

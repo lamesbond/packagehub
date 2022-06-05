@@ -137,12 +137,13 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
         List<DocMenuVO> finalResult = new ArrayList<>();
 
         for (DocMenuVO firstDocMenuVO : result) {
+            System.out.println("========"+firstDocMenuVO);
             for (DocMenuVO secondDocMenuVO : result) {
                 if (firstDocMenuVO.getId().equals(secondDocMenuVO.getParentId())) {
                     firstDocMenuVO.getChildren().add(secondDocMenuVO);
                 }
             }
-            if (firstDocMenuVO.getLevel()==1L) {
+            if (firstDocMenuVO.getParentId().equals(id)) {
                 finalResult.add(firstDocMenuVO);
             }
         }
