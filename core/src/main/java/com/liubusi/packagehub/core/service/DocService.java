@@ -31,4 +31,7 @@ public interface DocService extends IService<Doc> {
     String getDocContent(Long id);
 
     List<DocMenuVO> getDocMenu(Long id);
+
+    void save(Long id, String docTitle, Long parentId);
+
 }

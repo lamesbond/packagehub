@@ -38,4 +38,8 @@
         ORDER BY level, id
         ;
     </select>
+
+    <insert id="save">
+        insert into doc (`id`, `doc_title`, `parent_id`) value (#{id}, #{docTitle}, #{parentId})
+    </insert>
 </mapper>

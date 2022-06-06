@@ -159,4 +159,9 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
         }
         return false;
     }
+
+    @Override
+    public void save(Long id, String docTitle, Long parentId) {
+        docMapper.save(id, docTitle, parentId);
+    }
 }

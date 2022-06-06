@@ -7,11 +7,13 @@ import com.liubusi.packagehub.common.result.Result;
 import com.liubusi.packagehub.core.pojo.dto.ExcelDocDTO;
 import com.liubusi.packagehub.core.pojo.entity.Doc;
 import com.liubusi.packagehub.core.pojo.vo.DocMenuVO;
+import com.liubusi.packagehub.core.pojo.vo.DocTitleVO;
 import com.liubusi.packagehub.core.service.DocService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -90,5 +92,45 @@ public class AdminDocController {
         return Result.ok().data("docMenu", result);
     }
 
+    @ApiOperation("根据文档ID修改文档标题，内容")
+    @PostMapping("/updateDoc")
+    public Result updateTitle(
+            @ApiParam(value = "文档id", required = true)
+            @RequestBody DocTitleVO docTitleVO) {
+        Doc doc = new Doc();
+        BeanUtils.copyProperties(docTitleVO, doc);
+        docService.updateById(doc);
+        return Result.ok().message("修改成功");
+    }
+
+    @ApiOperation("新增文档")
+    @PostMapping("/saveDoc")
+    public Result saveDoc(
+            @ApiParam(value = "文档id", required = true)
+            @RequestBody Map<String, String> map) {
+
+        Long id = Long.valueOf(map.get("id"));
+        Long parentId = Long.valueOf(map.get("parentId"));
+        String docTitle = map.get("docTitle");
+        System.out.println("增加的id："+id);
+        System.out.println("增加的parentid："+parentId);
+        System.out.println("增加的doctitle："+docTitle);
+//        Long id = docTitleVO.getChildren().getId();
+//        String docTitle = docTitleVO.getChildren().getDocTitle();
+//        Long parentId = docTitleVO.getId();
+        Doc doc = new Doc();
+//        BeanUtils.copyProperties(docTitleVO, doc);
+        docService.save(id, docTitle, parentId);
+        return Result.ok().message("修改成功");
+    }
+
+    @ApiOperation("删除文档")
+    @DeleteMapping("/removeDoc/{id}")
+    public Result removeDoc(
+            @ApiParam(value = "文档id", required = true)
+            @PathVariable String id) {
+        docService.removeById(id);
+        return Result.ok().message("删除成功");
+    }
 }
 
