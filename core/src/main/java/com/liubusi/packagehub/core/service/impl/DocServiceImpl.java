@@ -2,10 +2,13 @@ package com.liubusi.packagehub.core.service.impl;
 
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.liubusi.packagehub.common.exception.BusinessException;
+import com.liubusi.packagehub.common.result.ResponseEnum;
 import com.liubusi.packagehub.core.listener.ExcelDocDTOListener;
 import com.liubusi.packagehub.core.pojo.dto.ExcelDocDTO;
 import com.liubusi.packagehub.core.pojo.entity.Doc;
 import com.liubusi.packagehub.core.mapper.DocMapper;
+import com.liubusi.packagehub.core.pojo.vo.DocInfoVO;
 import com.liubusi.packagehub.core.pojo.vo.DocMenuVO;
 import com.liubusi.packagehub.core.service.DocService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -156,7 +159,20 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
     }
 
     @Override
-    public void updatePosition(Long sourceId, Long destId, String method) {
+    public void updatePosition(DocInfoVO docInfoVO) {
+        Long id = docInfoVO.getId();
+        Long destId = docInfoVO.getDestId();
+        String method = docInfoVO.getMethod();
+
+        if (method.equals("before")) {
+            docMapper.updatePositionByBefore(id,destId);
+        } else if (method.equals("after")) {
+            docMapper.updatePositionByAfter(id,destId);
+        } else if (method.equals("inner")) {
+            docMapper.updatePositionByInner(id,destId);
+        } else {
+            log.info("拖拽参数不合法");
+        }
     }
 
     private boolean hasChildren(Long id) {

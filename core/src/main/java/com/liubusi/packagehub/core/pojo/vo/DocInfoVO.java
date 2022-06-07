@@ -8,22 +8,16 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
-@ApiModel(description="文档标题对象")
-public class DocTitleVO {
-
-    private static final long serialVersionUID = 1L;
+@ApiModel(description="文档信息对象")
+public class DocInfoVO {
 
     @ApiModelProperty(value = "id")
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "上级id")
-    private Long parentId;
+    @ApiModelProperty(value = "目标id")
+    private Long destId;
 
     @ApiModelProperty(value = "标题")
     private String docTitle;
@@ -33,8 +27,5 @@ public class DocTitleVO {
 
     @ApiModelProperty(value = "拖拽方法")
     private String method;
-
-    @TableField(exist = false)
-    private DocTitleVO children = new DocTitleVO();
 
 }

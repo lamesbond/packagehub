@@ -22,4 +22,10 @@ public interface DocMapper extends BaseMapper<Doc> {
     List<DocMenuVO> getDocMenu(Long id);
 
     void save(Long id, String docTitle, Long parentId);
+
+    void updatePositionByBefore(Long id, Long destId);
+
+    void updatePositionByAfter(Long id, Long destId);
+
+    void updatePositionByInner(Long id, Long destId);
 }

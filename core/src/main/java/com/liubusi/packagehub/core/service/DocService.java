@@ -3,6 +3,7 @@ package com.liubusi.packagehub.core.service;
 import com.liubusi.packagehub.core.pojo.dto.ExcelDocDTO;
 import com.liubusi.packagehub.core.pojo.entity.Doc;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.liubusi.packagehub.core.pojo.vo.DocInfoVO;
 import com.liubusi.packagehub.core.pojo.vo.DocMenuVO;
 
 import java.io.InputStream;
@@ -34,5 +35,5 @@ public interface DocService extends IService<Doc> {
 
     void save(Long id, String docTitle, Long parentId);
 
-    void updatePosition(Long sourceId, Long destId, String method);
+    void updatePosition(DocInfoVO docInfoVO);
 }

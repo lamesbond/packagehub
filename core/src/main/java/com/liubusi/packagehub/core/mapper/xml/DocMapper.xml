@@ -19,6 +19,23 @@
             )
         </foreach>
     </insert>
+    <update id="updatePositionByBefore">
+        update doc set position = position -1 where parent_id = (select parent_id from (select parent_id from doc where id = #{destId})a)
+          and position &lt; (select position from (select position from doc where id = #{destId})b);
+        update doc set position = (select position from (select (select position from doc where id = #{destId})-1 position) position),
+          parent_id = (select parent_id from (select parent_id from doc where id = #{destId}) parent_id) where id = #{id};
+    </update>
+    <update id="updatePositionByAfter">
+        update doc set position = position +1 where parent_id = (select parent_id from (select parent_id from doc where id = #{destId})a)
+          and position > (select position from (select position from doc where id = #{destId})b);
+        update doc set position = (select position from (select (select position from doc where id = #{destId})+1 position) position),
+          parent_id = (select parent_id from (select parent_id from doc where id = #{destId}) parent_id) where id = #{id};
+    </update>
+    <update id="updatePositionByInner">
+        update doc set position =
+          (select position from (select IFNULL((select min(position) from doc where parent_id = #{destId})-1, 888)position)position),
+          parent_id = #{destId} where id = #{id};
+    </update>
 
     <select id="getDocMenu" resultType="com.liubusi.packagehub.core.pojo.vo.DocMenuVO">
         SELECT T2.level, T3.*
