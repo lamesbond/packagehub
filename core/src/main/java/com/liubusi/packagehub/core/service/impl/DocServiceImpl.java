@@ -150,6 +150,15 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
         return finalResult;
     }
 
+    @Override
+    public void save(Long id, String docTitle, Long parentId) {
+        docMapper.save(id, docTitle, parentId);
+    }
+
+    @Override
+    public void updatePosition(Long sourceId, Long destId, String method) {
+    }
+
     private boolean hasChildren(Long id) {
         QueryWrapper<Doc> docQueryWrapper = new QueryWrapper<>();
         docQueryWrapper.eq("parent_id", id);
@@ -160,8 +169,4 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
         return false;
     }
 
-    @Override
-    public void save(Long id, String docTitle, Long parentId) {
-        docMapper.save(id, docTitle, parentId);
-    }
 }

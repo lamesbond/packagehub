@@ -103,6 +103,18 @@ public class AdminDocController {
         return Result.ok().message("修改成功");
     }
 
+    @ApiOperation("根据文档ID修改文档排序值")
+    @PostMapping("/updatePosition")
+    public Result updatePosition(
+            @ApiParam(value = "文档id", required = true)
+            @RequestBody Map<String, Object> map) {
+        Long sourceId = (Long)map.get("id");
+        Long destId = (Long)map.get("destId");
+        String method = (String) map.get("method");
+        docService.updatePosition(sourceId,destId,method);
+        return Result.ok().message("修改成功");
+    }
+
     @ApiOperation("新增文档")
     @PostMapping("/saveDoc")
     public Result saveDoc(

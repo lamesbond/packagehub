@@ -34,4 +34,5 @@ public interface DocService extends IService<Doc> {
 
     void save(Long id, String docTitle, Long parentId);
 
+    void updatePosition(Long sourceId, Long destId, String method);
 }
