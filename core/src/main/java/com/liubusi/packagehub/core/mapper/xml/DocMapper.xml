@@ -35,7 +35,7 @@
             ) T2, doc T3
         WHERE FIND_IN_SET(T3.id, T2._ids)
           and id != #{id}
-        ORDER BY level, id
+        ORDER BY level, position
         ;
     </select>
 

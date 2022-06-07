@@ -22,8 +22,17 @@ public class DocTitleVO {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "上级id")
+    private Long parentId;
+
     @ApiModelProperty(value = "标题")
     private String docTitle;
+
+    @ApiModelProperty(value = "排序")
+    private Long position;
+
+    @ApiModelProperty(value = "拖拽方法")
+    private String method;
 
     @TableField(exist = false)
     private DocTitleVO children = new DocTitleVO();

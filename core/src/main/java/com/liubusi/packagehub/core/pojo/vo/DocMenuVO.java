@@ -34,6 +34,9 @@ public class DocMenuVO {
     @ApiModelProperty(value = "是否在编辑状态")
     private String isEdit = "false";
 
+    @ApiModelProperty(value = "排序")
+    private Long position;
+
     @TableField(exist = false)
     private List<DocMenuVO> children = new ArrayList<>();
 
