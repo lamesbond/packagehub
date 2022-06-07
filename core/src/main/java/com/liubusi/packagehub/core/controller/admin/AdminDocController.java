@@ -96,10 +96,13 @@ public class AdminDocController {
     @PostMapping("/updateDoc")
     public Result updateTitle(
             @ApiParam(value = "文档id", required = true)
-            @RequestBody DocTitleVO docTitleVO) {
+            @RequestBody Map<String, Object> map) {
         Doc doc = new Doc();
-        BeanUtils.copyProperties(docTitleVO, doc);
-        docService.updateById(doc);
+        Long id = (Long)map.get("id");
+        String docTitle = (String) map.get("docTitle");
+        doc.setId(id);
+        doc.setDocTitle(docTitle);
+        docService.saveOrUpdate(doc);
         return Result.ok().message("修改成功");
     }
 
