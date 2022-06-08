@@ -3,7 +3,6 @@ package com.liubusi.packagehub.core.pojo.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -27,7 +26,7 @@ public class Doc implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "id")
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id")
     private Long id;
 
     @ApiModelProperty(value = "上级id")
@@ -38,6 +37,9 @@ public class Doc implements Serializable {
 
     @ApiModelProperty(value = "内容")
     private String docContent;
+
+    @ApiModelProperty(value = "是不是文档，是就不展示下一级了，0不是，1是")
+    private String isDoc;
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;

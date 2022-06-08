@@ -16,6 +16,9 @@ public class DocInfoVO {
     @ApiModelProperty(value = "id")
     private Long id;
 
+    @ApiModelProperty(value = "上级id")
+    private Long parentId;
+
     @ApiModelProperty(value = "目标id")
     private Long destId;
 
@@ -27,5 +30,11 @@ public class DocInfoVO {
 
     @ApiModelProperty(value = "拖拽方法")
     private String method;
+
+    @ApiModelProperty(value = "数据字典的等级")
+    private String level;
+
+    @ApiModelProperty(value = "是否是文档，0不是，1是")
+    private String isDoc;
 
 }

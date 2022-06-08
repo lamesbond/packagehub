@@ -19,17 +19,40 @@
             )
         </foreach>
     </insert>
+
+    <select id="listParentProjectById" resultType="com.liubusi.packagehub.core.pojo.vo.DocInfoVO">
+        SELECT T1.level, T2.doc_title
+        FROM (
+        SELECT
+        @r AS _id,
+        (SELECT @r := parent_id FROM doc WHERE id = _id) AS parent_id,
+        @l := @l + 1 AS level
+        FROM
+        (SELECT @r := #{id}, @l := 0) vars,
+        doc h
+        WHERE @r &lt;&gt; 0) T1
+        JOIN doc T2
+        ON T1._id = T2.id
+        ORDER BY T1.level DESC
+    </select>
+
     <update id="updatePositionByBefore">
-        update doc set position = position -1 where parent_id = (select parent_id from (select parent_id from doc where id = #{destId})a)
+        update doc set position = position -1 where parent_id =
+          (select parent_id from (select parent_id from doc where id = #{destId})a)
           and position &lt; (select position from (select position from doc where id = #{destId})b);
-        update doc set position = (select position from (select (select position from doc where id = #{destId})-1 position) position),
-          parent_id = (select parent_id from (select parent_id from doc where id = #{destId}) parent_id) where id = #{id};
+        update doc set position =
+          (select position from (select (select position from doc where id = #{destId})-1 position) position),
+          parent_id = (select parent_id from (select parent_id from doc where id = #{destId}) parent_id)
+          where id = #{id};
     </update>
     <update id="updatePositionByAfter">
-        update doc set position = position +1 where parent_id = (select parent_id from (select parent_id from doc where id = #{destId})a)
+        update doc set position = position +1 where parent_id =
+          (select parent_id from (select parent_id from doc where id = #{destId})a)
           and position > (select position from (select position from doc where id = #{destId})b);
-        update doc set position = (select position from (select (select position from doc where id = #{destId})+1 position) position),
-          parent_id = (select parent_id from (select parent_id from doc where id = #{destId}) parent_id) where id = #{id};
+        update doc set position =
+          (select position from (select (select position from doc where id = #{destId})+1 position) position),
+          parent_id = (select parent_id from (select parent_id from doc where id = #{destId}) parent_id)
+          where id = #{id};
     </update>
     <update id="updatePositionByInner">
         update doc set position =
@@ -37,7 +60,7 @@
           parent_id = #{destId} where id = #{id};
     </update>
 
-    <select id="getDocMenu" resultType="com.liubusi.packagehub.core.pojo.vo.DocMenuVO">
+    <select id="listMenuById" resultType="com.liubusi.packagehub.core.pojo.vo.DocMenuVO">
         SELECT T2.level, T3.*
         FROM(
                 SELECT @codes as _ids,
@@ -59,4 +82,22 @@
     <insert id="save">
         insert into doc (`id`, `doc_title`, `parent_id`) value (#{id}, #{docTitle}, #{parentId})
     </insert>
+
+    <delete id="removeById">
+        SELECT T2.level, T3.*
+        FROM(
+                SELECT @codes as _ids,
+			( SELECT @codes := GROUP_CONCAT(id)
+				FROM doc
+				 WHERE FIND_IN_SET(parent_id, @codes)
+			) as T1,
+		  @l := @l+1 as level
+                FROM doc,
+                    (SELECT @codes := #{id}, @l := -1 ) T4
+                WHERE @codes IS NOT NULL
+            ) T2, doc T3
+        WHERE FIND_IN_SET(T3.id, T2._ids)
+        ORDER BY level, position
+        ;
+    </delete>
 </mapper>

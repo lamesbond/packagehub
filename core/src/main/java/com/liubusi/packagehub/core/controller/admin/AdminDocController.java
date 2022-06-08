@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,20 +34,28 @@ public class AdminDocController {
     @Resource
     private DocService docService;
 
-    @ApiOperation("根据父id获取项目列表，只获取下一子级，不递归")
-    @GetMapping("/listProjectById/{parentId}")
-    public Result listProjectById(@ApiParam(value = "节点id", required = true)
-            @PathVariable Long parentId){
-        List<Doc> docList = docService.listByParentId(parentId);
-        return Result.ok().data("list", docList);
+    @ApiOperation("获取id下的子节点，只获取下一子级，不递归")
+    @GetMapping("/listChildProjectById/{id}")
+    public Result listChildProjectById(@ApiParam(value = "节点id", required = true)
+            @PathVariable Long id){
+        List<Doc> docList = docService.listChildProjectById(id);
+        return Result.ok().data("childList", docList);
     }
 
-    @ApiOperation("根据项目发行版本id递归获取目录")
+    @ApiOperation("获取id的所有父节点，递归到顶级节点")
+    @GetMapping("/listParentProjectById/{id}")
+    public Result listParentProjectById(@ApiParam(value = "节点id", required = true)
+                                       @PathVariable Long id){
+        String result = docService.listParentProjectById(id);
+        return Result.ok().data("docPath", result);
+    }
+
+    @ApiOperation("根据id递归获取文档目录")
     @GetMapping("/listMenuById/{id}")
     public Result listMenuById(
             @ApiParam(value = "文档id", required = true)
             @PathVariable Long id) {
-        List<DocMenuVO> result = docService.getDocMenu(id);
+        List<DocMenuVO> result = docService.listMenuById(id);
         return Result.ok().data("docMenu", result);
     }
 
@@ -82,21 +91,13 @@ public class AdminDocController {
     @ApiOperation("新增文档")
     @PostMapping("/saveDoc")
     public Result saveDoc(
-            @ApiParam(value = "文档id", required = true)
-            @RequestBody Map<String, String> map) {
-
-        Long id = Long.valueOf(map.get("id"));
-        Long parentId = Long.valueOf(map.get("parentId"));
-        String docTitle = map.get("docTitle");
-        System.out.println("增加的id："+id);
-        System.out.println("增加的parentid："+parentId);
-        System.out.println("增加的doctitle："+docTitle);
-//        Long id = docTitleVO.getChildren().getId();
-//        String docTitle = docTitleVO.getChildren().getDocTitle();
-//        Long parentId = docTitleVO.getId();
+            @ApiParam(value = "文档数据", required = true)
+            @RequestBody DocInfoVO docInfoVO) {
         Doc doc = new Doc();
-//        BeanUtils.copyProperties(docTitleVO, doc);
-        docService.save(id, docTitle, parentId);
+        BeanUtils.copyProperties(docInfoVO, doc);
+        System.out.println("==========="+docInfoVO.getIsDoc()+docInfoVO.getDocTitle()+docInfoVO.getId());
+        System.out.println("==========="+doc.getIsDoc()+doc.getDocTitle()+doc.getId());
+        docService.save(doc);
         return Result.ok().message("修改成功");
     }
 
@@ -104,7 +105,7 @@ public class AdminDocController {
     @DeleteMapping("/removeDoc/{id}")
     public Result removeDoc(
             @ApiParam(value = "文档id", required = true)
-            @PathVariable String id) {
+            @PathVariable Long id) {
         docService.removeById(id);
         return Result.ok().message("删除成功");
     }

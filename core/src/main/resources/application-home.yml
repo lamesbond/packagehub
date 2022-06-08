@@ -7,7 +7,7 @@ spring:
   datasource: # mysql数据库连接
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://liubusi.top:3306/packagehub?serverTimezone=GMT%2B8&characterEncoding=utf-8
+    url: jdbc:mysql://liubusi.top:3306/packagehub?serverTimezone=GMT%2B8&characterEncoding=utf-8&allowMultiQueries=true
     username: root
     password: Bb!13733409223
   redis:

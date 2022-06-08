@@ -23,7 +23,9 @@ public interface DocService extends IService<Doc> {
 
     List<ExcelDocDTO> listDocData();
 
-    List<Doc> listByParentId(Long parentId);
+    List<Doc> listChildProjectById(Long id);
+
+    String listParentProjectById(Long id);
 
     List<Doc> findByDocCode(String dictCode);
 
@@ -31,9 +33,11 @@ public interface DocService extends IService<Doc> {
 
     String getDocContent(Long id);
 
-    List<DocMenuVO> getDocMenu(Long id);
+    List<DocMenuVO> listMenuById(Long id);
 
     void save(Long id, String docTitle, Long parentId);
 
     void updatePosition(DocInfoVO docInfoVO);
+
+    void removeById(Long id);
 }

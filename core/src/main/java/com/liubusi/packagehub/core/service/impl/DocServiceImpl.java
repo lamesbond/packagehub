@@ -18,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.InputStream;
@@ -67,29 +68,34 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
     }
 
     @Override
-    public List<Doc> listByParentId(Long parentId) {
+    public List<Doc> listChildProjectById(Long id) {
         //先查询redis中是否存在数据列表
         List<Doc> docList = null;
-        try {
-            docList = (List<Doc>)redisTemplate.opsForValue().get("packagehub:core:doc:" + parentId);
-            if (docList != null) {
-                log.info("从redis中取值");
-                return docList;
-            }
-        } catch (Exception e) {
-            log.error("redis服务异常：" + ExceptionUtils.getStackTrace(e));;//此处不抛出异常，继续执行后面的代码
-        }
+//        try {
+//            docList = (List<Doc>)redisTemplate.opsForValue().get("packagehub:core:doc:" + id);
+//            if (docList != null) {
+//                log.info("从redis中取值");
+//                return docList;
+//            }
+//        } catch (Exception e) {
+//            log.error("redis服务异常：" + ExceptionUtils.getStackTrace(e));;//此处不抛出异常，继续执行后面的代码
+//        }
 
         log.info("从数据库中取值");
-        docList = baseMapper.selectList(new QueryWrapper<Doc>().eq("parent_id", parentId));
+        docList = baseMapper.selectList(new QueryWrapper<Doc>().eq("parent_id", id));
         docList.forEach(doc -> {
-            boolean hasChildren = this.hasChildren(doc.getId());
-            doc.setHasChildren(hasChildren);
+
+            if (doc.getIsDoc().equals("1")) {
+                doc.setHasChildren(false);
+            } else {
+                boolean hasChildren = this.hasChildren(doc.getId());
+                doc.setHasChildren(hasChildren);
+            }
         });
 
         //将数据存入redis
         try {
-            redisTemplate.opsForValue().set("packagehub:core:doc:" + parentId, docList, 5, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set("packagehub:core:doc:" + id, docList, 5, TimeUnit.MINUTES);
             log.info("数据存入redis");
         } catch (Exception e) {
             log.error("redis服务器异常：" + ExceptionUtils.getStackTrace(e));//此处不抛出异常，继续执行后面的代码
@@ -99,11 +105,31 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
     }
 
     @Override
+    public String listParentProjectById(Long id) {
+        //先查询redis中是否存在数据列表
+        List<Doc> docList = null;
+
+        log.info("从数据库中取值");
+        List<DocInfoVO> docInfoVOList = docMapper.listParentProjectById(id);
+        String result = "";
+
+        for (DocInfoVO docInfoVO : docInfoVOList) {
+            if (docInfoVOList.size() -1 == docInfoVOList.indexOf(docInfoVO)) {
+                result += docInfoVO.getDocTitle();
+            } else {
+                result += docInfoVO.getDocTitle() + "-";
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public List<Doc> findByDocCode(String docCode) {
         QueryWrapper<Doc> docQueryWrapper = new QueryWrapper<>();
         docQueryWrapper.eq("doc_code", docCode);
         Doc doc = baseMapper.selectOne(docQueryWrapper);
-        return this.listByParentId(doc.getId());
+        return this.listChildProjectById(doc.getId());
     }
 
     @Override
@@ -135,8 +161,8 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
     }
 
     @Override
-    public List<DocMenuVO> getDocMenu(Long id) {
-        List<DocMenuVO> result = docMapper.getDocMenu(id);
+    public List<DocMenuVO> listMenuById(Long id) {
+        List<DocMenuVO> result = docMapper.listMenuById(id);
         List<DocMenuVO> finalResult = new ArrayList<>();
 
         for (DocMenuVO firstDocMenuVO : result) {
@@ -185,4 +211,8 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
         return false;
     }
 
+    @Override
+    public void removeById(Long id) {
+        docMapper.removeById(id);
+    }
 }
