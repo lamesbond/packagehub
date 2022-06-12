@@ -20,7 +20,7 @@ public interface DocMapper extends BaseMapper<Doc> {
 
     List<DocVO> listMenuById(Long id);
 
-    void saveCategory(Long id, String title, Long parentId, String department, String description, String isDoc);
+    void saveCategory(Long id, String title, Long parentId, String department, String description, String isDoc, String pubStatus);
 
     void saveMenu(Long id, String title, Long parentId);
 

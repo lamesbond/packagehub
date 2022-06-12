@@ -127,9 +127,10 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
         String department = docVO.getDepartment();
         String description = docVO.getDescription();
         String isDoc = docVO.getIsDoc();
+        String pubStatus = docVO.getPubStatus();
 
         if (!StringUtils.isEmpty(department) || !StringUtils.isEmpty(description) || !StringUtils.isEmpty(isDoc)) {
-            docMapper.saveCategory(id, title, parentId, department, description, isDoc);
+            docMapper.saveCategory(id, title, parentId, department, description, isDoc, pubStatus);
         } else {
             docMapper.saveMenu(id, title, parentId);
         }

@@ -38,8 +38,8 @@
     </select>
 
     <insert id="saveCategory">
-        insert into doc (`id`, `title`, `parent_id`, `department`, `description`, `is_doc`)
-        values (#{id}, #{title}, #{parentId}, #{department}, #{description}, #{isDoc})
+        insert into doc (`id`, `title`, `parent_id`, `department`, `description`, `is_doc`, `pub_status`)
+        values (#{id}, #{title}, #{parentId}, #{department}, #{description}, #{isDoc}, #{pubStatus})
     </insert>
     <insert id="saveMenu">
         INSERT INTO doc (`id`, `title`, `parent_id`, `position`) VALUES (
