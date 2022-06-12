@@ -19,17 +19,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/core/dict")
 @Slf4j
-public class DictController {
+public class DocController {
     @Resource
     private DocService dictService;
 
-    @ApiOperation("根据dictCode获取下级节点")
-    @GetMapping("/findByDictCode/{dictCode}")
-    public Result findByDictCode(
-            @ApiParam(value = "节点编码", required = true)
-            @PathVariable String dictCode) {
-        List<Doc> list = dictService.findByDocCode(dictCode);
-        return Result.ok().data("dictList", list);
-    }
+//    @ApiOperation("根据dictCode获取下级节点")
+//    @GetMapping("/findByDictCode/{dictCode}")
+//    public Result findByDictCode(
+//            @ApiParam(value = "节点编码", required = true)
+//            @PathVariable String dictCode) {
+//        List<Doc> list = dictService.findByDocCode(dictCode);
+//        return Result.ok().data("dictList", list);
+//    }
 
 }

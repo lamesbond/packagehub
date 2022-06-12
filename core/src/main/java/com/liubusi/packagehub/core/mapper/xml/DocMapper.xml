@@ -1,26 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.liubusi.packagehub.core.mapper.DocMapper">
-    <insert id="insertBatch">
-        insert into doc (
-        id ,
-        parent_id ,
-        name ,
-        value ,
-        dict_code
-        ) values
-        <foreach collection="list" item="item" index="index" separator=",">
-            (
-            #{item.id} ,
-            #{item.parentId} ,
-            #{item.name} ,
-            #{item.value} ,
-            #{item.dictCode}
-            )
-        </foreach>
-    </insert>
 
-    <select id="listParentProjectById" resultType="com.liubusi.packagehub.core.pojo.vo.DocInfoVO">
+    <select id="listParentCategoryById" resultType="com.liubusi.packagehub.core.pojo.vo.DocVO">
         SELECT T1.level, T2.doc_title
         FROM (
         SELECT
@@ -35,6 +17,56 @@
         ON T1._id = T2.id
         ORDER BY T1.level DESC
     </select>
+
+    <select id="listMenuById" resultType="com.liubusi.packagehub.core.pojo.vo.DocVO">
+        SELECT T2.level, T3.*
+        FROM(
+                SELECT @codes as _ids,
+                       ( SELECT @codes := GROUP_CONCAT(id)
+                         FROM doc
+                         WHERE FIND_IN_SET(parent_id, @codes)
+                       ) as T1,
+                       @l := @l+1 as level
+                FROM doc,
+                     (SELECT @codes := #{id}, @l := -1 ) T4
+                WHERE @codes IS NOT NULL
+            ) T2, doc T3
+        WHERE FIND_IN_SET(T3.id, T2._ids)
+          and id != #{id}
+        ORDER BY level, position
+        ;
+    </select>
+
+    <insert id="saveCategory">
+        insert into doc (`id`, `title`, `parent_id`, `department`, `description`, `is_doc`)
+        values (#{id}, #{title}, #{parentId}, #{department}, #{description}, #{isDoc})
+    </insert>
+    <insert id="saveMenu">
+        INSERT INTO doc (`id`, `title`, `parent_id`, `position`) VALUES (
+        #{id}, #{title}, #{parentId},
+        (select position from
+            (select IFNULL((select position from doc where parent_id = #{parentId} order by position limit 1)-1, 888)position)position)
+        )
+    </insert>
+
+    <delete id="remove">
+        delete from doc where id in (select id from (
+            SELECT T3.id
+            FROM(
+                    SELECT @codes as _ids,
+                           ( SELECT @codes := GROUP_CONCAT(id)
+                             FROM doc
+                             WHERE FIND_IN_SET(parent_id, @codes)
+                           ) as T1,
+                           @l := @l+1 as level
+                    FROM doc,
+                         (SELECT @codes := #{id}, @l := -1 ) T4
+                    WHERE @codes IS NOT NULL
+                ) T2, doc T3
+            WHERE FIND_IN_SET(T3.id, T2._ids)
+        )id
+        )
+    </delete>
 
     <update id="updatePositionByBefore">
         update doc set position = position -1 where parent_id =
@@ -60,44 +92,4 @@
           parent_id = #{destId} where id = #{id};
     </update>
 
-    <select id="listMenuById" resultType="com.liubusi.packagehub.core.pojo.vo.DocMenuVO">
-        SELECT T2.level, T3.*
-        FROM(
-                SELECT @codes as _ids,
-			( SELECT @codes := GROUP_CONCAT(id)
-				FROM doc
-				 WHERE FIND_IN_SET(parent_id, @codes)
-			) as T1,
-		  @l := @l+1 as level
-                FROM doc,
-                    (SELECT @codes := #{id}, @l := -1 ) T4
-                WHERE @codes IS NOT NULL
-            ) T2, doc T3
-        WHERE FIND_IN_SET(T3.id, T2._ids)
-          and id != #{id}
-        ORDER BY level, position
-        ;
-    </select>
-
-    <insert id="save">
-        insert into doc (`id`, `doc_title`, `parent_id`) value (#{id}, #{docTitle}, #{parentId})
-    </insert>
-
-    <delete id="removeById">
-        SELECT T2.level, T3.*
-        FROM(
-                SELECT @codes as _ids,
-			( SELECT @codes := GROUP_CONCAT(id)
-				FROM doc
-				 WHERE FIND_IN_SET(parent_id, @codes)
-			) as T1,
-		  @l := @l+1 as level
-                FROM doc,
-                    (SELECT @codes := #{id}, @l := -1 ) T4
-                WHERE @codes IS NOT NULL
-            ) T2, doc T3
-        WHERE FIND_IN_SET(T3.id, T2._ids)
-        ORDER BY level, position
-        ;
-    </delete>
 </mapper>

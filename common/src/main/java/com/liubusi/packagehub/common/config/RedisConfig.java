@@ -39,7 +39,6 @@ public class RedisConfig {
 
         jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
 
-
         redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);
         return redisTemplate;
     }

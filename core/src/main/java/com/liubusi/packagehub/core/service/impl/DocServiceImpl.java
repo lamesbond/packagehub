@@ -1,15 +1,9 @@
 package com.liubusi.packagehub.core.service.impl;
 
-import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.liubusi.packagehub.common.exception.BusinessException;
-import com.liubusi.packagehub.common.result.ResponseEnum;
-import com.liubusi.packagehub.core.listener.ExcelDocDTOListener;
-import com.liubusi.packagehub.core.pojo.dto.ExcelDocDTO;
 import com.liubusi.packagehub.core.pojo.entity.Doc;
 import com.liubusi.packagehub.core.mapper.DocMapper;
-import com.liubusi.packagehub.core.pojo.vo.DocInfoVO;
-import com.liubusi.packagehub.core.pojo.vo.DocMenuVO;
+import com.liubusi.packagehub.core.pojo.vo.DocVO;
 import com.liubusi.packagehub.core.service.DocService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -17,15 +11,11 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -46,31 +36,12 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
     @Resource
     private DocMapper docMapper;
 
-    @Transactional(rollbackFor = {Exception.class})
-    @Override
-    public void importData(InputStream inputStream) {
-        EasyExcel.read(inputStream, ExcelDocDTO.class, new ExcelDocDTOListener(baseMapper)).sheet().doRead();
-        log.info("importData finished");
-    }
 
     @Override
-    public List<ExcelDocDTO> listDocData() {
-        List<Doc> docList = baseMapper.selectList(null);
-        //创建ExceldocDTO列表，将doc列表转换成ExceldocDTO列表
-        ArrayList<ExcelDocDTO> exceldocDTOList = new ArrayList<>(docList.size());
-        docList.forEach(doc -> {
-
-            ExcelDocDTO exceldocDTO = new ExcelDocDTO();
-            BeanUtils.copyProperties(doc, exceldocDTO);
-            exceldocDTOList.add(exceldocDTO);
-        });
-        return exceldocDTOList;
-    }
-
-    @Override
-    public List<Doc> listChildProjectById(Long id) {
+    public List<DocVO> listChildCategoryById(Long id) {
         //先查询redis中是否存在数据列表
         List<Doc> docList = null;
+        List<DocVO> docVOList = new ArrayList<>();
 //        try {
 //            docList = (List<Doc>)redisTemplate.opsForValue().get("packagehub:core:doc:" + id);
 //            if (docList != null) {
@@ -83,13 +54,20 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
 
         log.info("从数据库中取值");
         docList = baseMapper.selectList(new QueryWrapper<Doc>().eq("parent_id", id));
-        docList.forEach(doc -> {
 
-            if (doc.getIsDoc().equals("1")) {
-                doc.setHasChildren(false);
+        docList.forEach(doc -> {
+            log.info("docccc"+doc.toString());
+            DocVO docVO1 = new DocVO();
+            BeanUtils.copyProperties(doc,docVO1);
+            docVOList.add(docVO1);
+        });
+        docVOList.forEach(docVO -> {
+            log.info("docVVOVOV"+docVO.toString());
+            if (docVO.getIsDoc().equals("1")) {
+                docVO.setHasChildren(false);
             } else {
-                boolean hasChildren = this.hasChildren(doc.getId());
-                doc.setHasChildren(hasChildren);
+                boolean hasChildren = this.hasChildren(docVO.getId());
+                docVO.setHasChildren(hasChildren);
             }
         });
 
@@ -101,23 +79,21 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
             log.error("redis服务器异常：" + ExceptionUtils.getStackTrace(e));//此处不抛出异常，继续执行后面的代码
         }
 
-        return docList;
+        return docVOList;
     }
 
     @Override
-    public String listParentProjectById(Long id) {
-        //先查询redis中是否存在数据列表
-        List<Doc> docList = null;
+    public String listParentCategoryById(Long id) {
 
         log.info("从数据库中取值");
-        List<DocInfoVO> docInfoVOList = docMapper.listParentProjectById(id);
+        List<DocVO> docVOList = docMapper.listParentCategoryById(id);
         String result = "";
 
-        for (DocInfoVO docInfoVO : docInfoVOList) {
-            if (docInfoVOList.size() -1 == docInfoVOList.indexOf(docInfoVO)) {
-                result += docInfoVO.getDocTitle();
+        for (DocVO docVO : docVOList) {
+            if (docVOList.size() -1 == docVOList.indexOf(docVO)) {
+                result += docVO.getTitle();
             } else {
-                result += docInfoVO.getDocTitle() + "-";
+                result += docVO.getTitle() + "-";
             }
         }
 
@@ -125,79 +101,62 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
     }
 
     @Override
-    public List<Doc> findByDocCode(String docCode) {
-        QueryWrapper<Doc> docQueryWrapper = new QueryWrapper<>();
-        docQueryWrapper.eq("doc_code", docCode);
-        Doc doc = baseMapper.selectOne(docQueryWrapper);
-        return this.listChildProjectById(doc.getId());
-    }
+    public List<DocVO> listMenuById(Long id) {
+        List<DocVO> result = docMapper.listMenuById(id);
+        List<DocVO> finalResult = new ArrayList<>();
 
-    @Override
-    public String getNameByParentDocCodeAndValue(String docCode, Integer value) {
-        QueryWrapper<Doc> docQueryWrapper = new QueryWrapper<>();
-        docQueryWrapper.eq("doc_code", docCode);
-        Doc parentDoc = baseMapper.selectOne(docQueryWrapper);
-
-        if (parentDoc == null) {
-            return "";
-        }
-
-        docQueryWrapper = new QueryWrapper<>();
-        docQueryWrapper.eq("parent_id", parentDoc.getParentId()).eq("value", value);
-        Doc doc = baseMapper.selectOne(docQueryWrapper);
-
-        if (doc == null) {
-            return "";
-        }
-
-        return doc.getDocTitle();
-    }
-
-    @Override
-    public String getDocContent(Long id) {
-        Doc doc = baseMapper.selectById(id);
-        String docContent = doc.getDocContent();
-        return docContent;
-    }
-
-    @Override
-    public List<DocMenuVO> listMenuById(Long id) {
-        List<DocMenuVO> result = docMapper.listMenuById(id);
-        List<DocMenuVO> finalResult = new ArrayList<>();
-
-        for (DocMenuVO firstDocMenuVO : result) {
-            System.out.println("========"+firstDocMenuVO);
-            for (DocMenuVO secondDocMenuVO : result) {
-                if (firstDocMenuVO.getId().equals(secondDocMenuVO.getParentId())) {
-                    firstDocMenuVO.getChildren().add(secondDocMenuVO);
+        for (DocVO firstDocVO : result) {
+            System.out.println("========"+firstDocVO);
+            for (DocVO secondDocVO : result) {
+                if (firstDocVO.getId().equals(secondDocVO.getParentId())) {
+                    firstDocVO.getChildren().add(secondDocVO);
                 }
             }
-            if (firstDocMenuVO.getParentId().equals(id)) {
-                finalResult.add(firstDocMenuVO);
+            if (firstDocVO.getParentId().equals(id)) {
+                finalResult.add(firstDocVO);
             }
         }
         return finalResult;
     }
 
     @Override
-    public void save(Long id, String docTitle, Long parentId) {
-        docMapper.save(id, docTitle, parentId);
+    public void save(DocVO docVO) {
+        Long id = docVO.getId();
+        Long parentId = docVO.getParentId();
+        String title = docVO.getTitle();
+        String department = docVO.getDepartment();
+        String description = docVO.getDescription();
+        String isDoc = docVO.getIsDoc();
+
+        if (!StringUtils.isEmpty(department) || !StringUtils.isEmpty(description) || !StringUtils.isEmpty(isDoc)) {
+            docMapper.saveCategory(id, title, parentId, department, description, isDoc);
+        } else {
+            docMapper.saveMenu(id, title, parentId);
+        }
     }
 
     @Override
-    public void updatePosition(DocInfoVO docInfoVO) {
-        Long id = docInfoVO.getId();
-        Long destId = docInfoVO.getDestId();
-        String method = docInfoVO.getMethod();
+    public void remove(Long id) {
+        docMapper.remove(id);
+    }
 
-        if (method.equals("before")) {
-            docMapper.updatePositionByBefore(id,destId);
-        } else if (method.equals("after")) {
-            docMapper.updatePositionByAfter(id,destId);
-        } else if (method.equals("inner")) {
-            docMapper.updatePositionByInner(id,destId);
+    @Override
+    public void update(DocVO docVO) {
+        Long id = docVO.getId();
+        Long destId = docVO.getDestId();
+        Doc doc = new Doc();
+        BeanUtils.copyProperties(docVO,doc);
+        String dragMethod = docVO.getDragMethod();
+        if (StringUtils.isEmpty(dragMethod)) {
+            docMapper.updateById(doc);
+        } else if (dragMethod.equals("before")) {
+            docMapper.updatePositionByBefore(id, destId);
+        } else if (dragMethod.equals("after")) {
+            docMapper.updatePositionByAfter(id, destId);
+        } else if (dragMethod.equals("inner")) {
+            docMapper.updatePositionByInner(id, destId);
         } else {
-            log.info("拖拽参数不合法");
+            log.info("dragmethod参数错误");
         }
     }
 
@@ -211,8 +170,4 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
         return false;
     }
 
-    @Override
-    public void removeById(Long id) {
-        docMapper.removeById(id);
-    }
 }

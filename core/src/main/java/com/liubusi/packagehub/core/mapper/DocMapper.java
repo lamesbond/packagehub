@@ -1,10 +1,8 @@
 package com.liubusi.packagehub.core.mapper;
 
-import com.liubusi.packagehub.core.pojo.dto.ExcelDocDTO;
 import com.liubusi.packagehub.core.pojo.entity.Doc;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.liubusi.packagehub.core.pojo.vo.DocInfoVO;
-import com.liubusi.packagehub.core.pojo.vo.DocMenuVO;
+import com.liubusi.packagehub.core.pojo.vo.DocVO;
 
 import java.util.List;
 
@@ -18,13 +16,15 @@ import java.util.List;
  */
 public interface DocMapper extends BaseMapper<Doc> {
 
-    void insertBatch(List<ExcelDocDTO> list);
+    List<DocVO> listParentCategoryById(Long id);
 
-    List<DocMenuVO> listMenuById(Long id);
+    List<DocVO> listMenuById(Long id);
 
-    List<DocInfoVO> listParentProjectById(Long id);
+    void saveCategory(Long id, String title, Long parentId, String department, String description, String isDoc);
 
-    void save(Long id, String docTitle, Long parentId);
+    void saveMenu(Long id, String title, Long parentId);
+
+    void remove(Long id);
 
     void updatePositionByBefore(Long id, Long destId);
 
@@ -32,5 +32,5 @@ public interface DocMapper extends BaseMapper<Doc> {
 
     void updatePositionByInner(Long id, Long destId);
 
-    void removeById(Long id);
+
 }

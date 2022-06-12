@@ -1,34 +1,22 @@
-package com.liubusi.packagehub.core.pojo.entity;
-
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
+package com.liubusi.packagehub.core.pojo.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-/**
- * <p>
- * 数据字典
- * </p>
- *
- * @author liubusi
- * @since 2022-05-21
- */
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
-//@EqualsAndHashCode(callSuper = false)
-@ApiModel(value="Doc对象", description="文档数据字典")
-public class Doc implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+@ApiModel(description="DocVO对象")
+public class DocVO implements Serializable{
 
     @ApiModelProperty(value = "id")
-    @TableId(value = "id")
     private Long id;
 
     @ApiModelProperty(value = "上级id")
@@ -53,16 +41,29 @@ public class Doc implements Serializable {
     private String content;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField(fill = FieldFill.INSERT)
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "发布状态")
     private String pubStatus;
+
+    @ApiModelProperty(value = "目标id")
+    private Long destId;
+
+    @ApiModelProperty(value = "拖拽方法")
+    private String dragMethod;
+
+    @ApiModelProperty(value = "数据字典的等级")
+    private String level;
+
+    @ApiModelProperty(value = "子集")
+    private List<DocVO> children = new ArrayList<>();
+
+    @ApiModelProperty(value = "是否有子集")
+    private boolean hasChildren;
 
 }
