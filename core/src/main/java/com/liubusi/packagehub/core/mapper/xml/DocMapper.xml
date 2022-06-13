@@ -3,7 +3,7 @@
 <mapper namespace="com.liubusi.packagehub.core.mapper.DocMapper">
 
     <select id="listParentCategoryById" resultType="com.liubusi.packagehub.core.pojo.vo.DocVO">
-        SELECT T1.level, T2.doc_title
+        SELECT T1.level, T2.title
         FROM (
         SELECT
         @r AS _id,
