@@ -62,7 +62,7 @@ public class AdminDocController {
             @ApiParam(value = "文档id", required = true)
             @PathVariable Long id) {
         Doc doc = docService.getById(id);
-        return Result.ok().data("docMenu", doc.getContent());
+        return Result.ok().data("docContent", doc.getContent());
     }
 
     @ApiOperation("新增文档")

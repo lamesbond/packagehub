@@ -1,3 +1,3 @@
 spring:
   profiles:
-    active: office # 环境设置
+    active: home # 环境设置
