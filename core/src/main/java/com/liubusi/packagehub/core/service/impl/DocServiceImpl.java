@@ -56,13 +56,11 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
         docList = baseMapper.selectList(new QueryWrapper<Doc>().eq("parent_id", id));
 
         docList.forEach(doc -> {
-            log.info("docccc"+doc.toString());
             DocVO docVO1 = new DocVO();
             BeanUtils.copyProperties(doc,docVO1);
             docVOList.add(docVO1);
         });
         docVOList.forEach(docVO -> {
-            log.info("docVVOVOV"+docVO.toString());
             if (docVO.getIsDoc().equals("1")) {
                 docVO.setHasChildren(false);
             } else {

@@ -31,7 +31,7 @@ public class AdminDocController {
     @Resource
     private DocService docService;
 
-    @ApiOperation("获取id下的子节点，只获取下一子级，不递归")
+    @ApiOperation("获取id下的下一级子节点，不递归")
     @GetMapping("/listChildCategoryById/{id}")
     public Result listChildCategoryById(@ApiParam(value = "节点id", required = true)
             @PathVariable Long id){
@@ -56,13 +56,13 @@ public class AdminDocController {
         return Result.ok().data("docMenu", result);
     }
 
-    @ApiOperation("根据id获取文档内容")
-    @GetMapping("/getContent/{id}")
-    public Result getContent(
+    @ApiOperation("根据id获取文档标题，内容等")
+    @GetMapping("/getOne/{id}")
+    public Result getOne(
             @ApiParam(value = "文档id", required = true)
             @PathVariable Long id) {
         Doc doc = docService.getById(id);
-        return Result.ok().data("docContent", doc.getContent());
+        return Result.ok().data("doc", doc);
     }
 
     @ApiOperation("新增文档")
