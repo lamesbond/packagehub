@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liubusi.packagehub.core.mapper.ProjectMapper">
+
+    <select id="listParentCategoryById" resultType="com.liubusi.packagehub.core.pojo.vo.ProjectVO">
+        SELECT T1.level, T2.name
+        FROM (
+        SELECT
+        @r AS _id,
+        (SELECT @r := parent_id FROM project WHERE id = _id) AS parent_id,
+        @l := @l + 1 AS level
+        FROM
+        (SELECT @r := #{id}, @l := 0) vars,
+        project h
+        WHERE @r &lt;&gt; 0) T1
+        JOIN project T2
+        ON T1._id = T2.id
+        ORDER BY T1.level DESC
+    </select>
+
+    <select id="listMenuById" resultType="com.liubusi.packagehub.core.pojo.vo.ProjectVO">
+        SELECT T2.level, T3.*
+        FROM(
+                SELECT @codes as _ids,
+                       ( SELECT @codes := GROUP_CONCAT(id)
+                         FROM project
+                         WHERE FIND_IN_SET(parent_id, @codes)
+                       ) as T1,
+                       @l := @l+1 as level
+                FROM project,
+                     (SELECT @codes := #{id}, @l := -1 ) T4
+                WHERE @codes IS NOT NULL
+            ) T2, project T3
+        WHERE FIND_IN_SET(T3.id, T2._ids)
+          and id != #{id}
+        ORDER BY level, position
+        ;
+    </select>
+
+    <insert id="saveCategory">
+        insert into project (`id`, `name`, `parent_id`, `department`, `description`, `type`, `pub_status`)
+        values (#{id}, #{name}, #{parentId}, #{department}, #{description}, #{type}, #{pubStatus})
+    </insert>
+    <insert id="saveMenu">
+        INSERT INTO project (`id`, `name`, `parent_id`, `position`) VALUES (
+        #{id}, #{title}, #{parentId},
+        (select position from
+            (select IFNULL((select position from project where parent_id = #{parentId} order by position limit 1)-1, 888)position)position)
+        )
+    </insert>
+
+    <delete id="remove">
+        delete from project where id in (select id from (
+            SELECT T3.id
+            FROM(
+                    SELECT @codes as _ids,
+                           ( SELECT @codes := GROUP_CONCAT(id)
+                             FROM project
+                             WHERE FIND_IN_SET(parent_id, @codes)
+                           ) as T1,
+                           @l := @l+1 as level
+                    FROM project,
+                         (SELECT @codes := #{id}, @l := -1 ) T4
+                    WHERE @codes IS NOT NULL
+                ) T2, project T3
+            WHERE FIND_IN_SET(T3.id, T2._ids)
+        )id
+        )
+    </delete>
+
+    <update id="updatePositionByBefore">
+        update project set position = position -1 where parent_id =
+          (select parent_id from (select parent_id from project where id = #{destId})a)
+          and position &lt; (select position from (select position from project where id = #{destId})b);
+        update project set position =
+          (select position from (select (select position from project where id = #{destId})-1 position) position),
+          parent_id = (select parent_id from (select parent_id from project where id = #{destId}) parent_id)
+          where id = #{id};
+    </update>
+    <update id="updatePositionByAfter">
+        update project set position = position +1 where parent_id =
+          (select parent_id from (select parent_id from project where id = #{destId})a)
+          and position > (select position from (select position from project where id = #{destId})b);
+        update project set position =
+          (select position from (select (select position from project where id = #{destId})+1 position) position),
+          parent_id = (select parent_id from (select parent_id from project where id = #{destId}) parent_id)
+          where id = #{id};
+    </update>
+    <update id="updatePositionByInner">
+        update project set position =
+          (select position from (select IFNULL((select min(position) from project where parent_id = #{destId})-1, 888)position)position),
+          parent_id = #{destId} where id = #{id};
+    </update>
+
+</mapper>
