@@ -126,9 +126,10 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         String description = projectVO.getDescription();
         String type = projectVO.getType();
         String pubStatus = projectVO.getPubStatus();
+        String url = projectVO.getUrl();
 
-        if (!StringUtils.isEmpty(department) || !StringUtils.isEmpty(description) || !StringUtils.isEmpty(type)) {
-            projectMapper.saveCategory(id, name, parentId, department, description, type, pubStatus);
+        if (type.equals("file")) {
+            projectMapper.saveFile(id, name, parentId, type, url);
         } else {
             projectMapper.saveMenu(id, name, parentId);
         }

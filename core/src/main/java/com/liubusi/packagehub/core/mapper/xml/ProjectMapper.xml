@@ -37,9 +37,9 @@
         ;
     </select>
 
-    <insert id="saveCategory">
-        insert into project (`id`, `name`, `parent_id`, `department`, `description`, `type`, `pub_status`)
-        values (#{id}, #{name}, #{parentId}, #{department}, #{description}, #{type}, #{pubStatus})
+    <insert id="saveFile">
+        insert into project (`id`, `name`, `parent_id`, `type`, `url`)
+        values (#{id}, #{name}, #{parentId},  #{type}, #{url})
     </insert>
     <insert id="saveMenu">
         INSERT INTO project (`id`, `name`, `parent_id`, `position`) VALUES (

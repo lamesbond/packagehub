@@ -16,7 +16,7 @@ import java.io.InputStream;
 
 @Api(tags = "阿里云文件管理")
 @RestController
-@RequestMapping("/api/oss/file")
+@RequestMapping("/admin/oss/file")
 public class FileController {
 
     @Resource

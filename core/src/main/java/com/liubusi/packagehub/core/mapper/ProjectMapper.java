@@ -23,7 +23,7 @@ public interface ProjectMapper extends BaseMapper<Project> {
 
     List<ProjectVO> listMenuById(Long id);
 
-    void saveCategory(Long id, String name, Long parentId, String department, String description, String type, String pubStatus);
+    void saveFile(Long id, String name, Long parentId, String type, String url);
 
     void saveMenu(Long id, String title, Long parentId);
 
@@ -34,5 +34,6 @@ public interface ProjectMapper extends BaseMapper<Project> {
     void updatePositionByAfter(Long id, Long destId);
 
     void updatePositionByInner(Long id, Long destId);
+
 
 }
