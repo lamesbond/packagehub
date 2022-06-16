@@ -29,11 +29,6 @@ public interface ProjectMapper extends BaseMapper<Project> {
 
     void remove(Long id);
 
-    void updatePositionByBefore(Long id, Long destId);
-
-    void updatePositionByAfter(Long id, Long destId);
-
-    void updatePositionByInner(Long id, Long destId);
-
+    void update(Long id, Long destId);
 
 }

@@ -1,6 +1,7 @@
 package com.liubusi.packagehub.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.liubusi.packagehub.core.mapper.ProjectMapper;
 import com.liubusi.packagehub.core.pojo.entity.Project;
@@ -61,12 +62,12 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
             projectVOList.add(projectVO1);
         });
         projectVOList.forEach(projectVO -> {
-            if (projectVO.getType().equals("release_version")) {
-                projectVO.setHasChildren(false);
-            } else {
+//            if (projectVO.getType().equals("release_version")) {
+//                projectVO.setHasChildren(false);
+//            } else {
                 boolean hasChildren = this.hasChildren(projectVO.getId());
                 projectVO.setHasChildren(hasChildren);
-            }
+//            }
         });
 
         //将数据存入redis
@@ -140,25 +141,15 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         projectMapper.remove(id);
     }
 
-    @Override
-    public void update(ProjectVO projectVO) {
-        Long id = projectVO.getId();
-        Long destId = projectVO.getDestId();
-        Project project = new Project();
-        BeanUtils.copyProperties(projectVO,project);
-        String dragMethod = projectVO.getDragMethod();
-        if (StringUtils.isEmpty(dragMethod)) {
-            projectMapper.updateById(project);
-        } else if (dragMethod.equals("before")) {
-            projectMapper.updatePositionByBefore(id, destId);
-        } else if (dragMethod.equals("after")) {
-            projectMapper.updatePositionByAfter(id, destId);
-        } else if (dragMethod.equals("inner")) {
-            projectMapper.updatePositionByInner(id, destId);
-        } else {
-            log.info("dragmethod参数错误");
-        }
-    }
+//    @Override
+//    public void update(ProjectVO projectVO) {
+//        Long id = projectVO.getId();
+//        Project project = new Project();
+//        BeanUtils.copyProperties(projectVO, project);
+//        UpdateWrapper<Project> projectUpdateWrapper= new UpdateWrapper<>();
+//        projectUpdateWrapper.set();
+//        projectMapper.update();
+//    }
 
     private boolean hasChildren(Long id) {
         QueryWrapper<Project> projectQueryWrapper = new QueryWrapper<>();

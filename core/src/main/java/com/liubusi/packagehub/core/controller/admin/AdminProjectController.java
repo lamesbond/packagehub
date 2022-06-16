@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -36,6 +37,14 @@ public class AdminProjectController {
             @PathVariable Long id){
         List<ProjectVO> projectVOList = projectService.listChildCategoryById(id);
         return Result.ok().data("childList", projectVOList);
+    }
+
+    @ApiOperation("获取id的所有父节点，递归到顶级节点")
+    @GetMapping("/listParentCategoryById/{id}")
+    public Result listParentCategoryById(@ApiParam(value = "节点id", required = true)
+                                         @PathVariable Long id){
+        String result = projectService.listParentCategoryById(id);
+        return Result.ok().data("projectPath", result);
     }
 
     @ApiOperation("根据id递归获取文档目录")
@@ -79,7 +88,10 @@ public class AdminProjectController {
     public Result update(
             @ApiParam(value = "文档id", required = true)
             @RequestBody ProjectVO projectVO) {
-        projectService.update(projectVO);
+        Project project = new Project();
+        BeanUtils.copyProperties(projectVO, project);
+        log.info("更新的project：" + project.toString());
+        projectService.updateById(project);
         return Result.ok().message("修改成功");
     }
 

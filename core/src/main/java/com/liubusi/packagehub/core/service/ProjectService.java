@@ -26,6 +26,6 @@ public interface ProjectService extends IService<Project> {
 
     void remove(Long id);
 
-    void update(ProjectVO projectVO);
+//    void update(ProjectVO projectVO);
 
 }

@@ -56,7 +56,7 @@ public class Project implements Serializable {
     private LocalDateTime updateTime;
 
     @ApiModelProperty(value = "发行日志")
-    private String release_note;
+    private String releaseNote;
 
     @ApiModelProperty(value = "发布状态，0没发布，1发布了")
     private String pubStatus;
