@@ -34,7 +34,7 @@ public class UserVO implements Serializable{
     @ApiModelProperty(value = "用户角色")
     private String role;
 
-    @ApiModelProperty(value = "用户角色")
+    @ApiModelProperty(value = "用户状态，0被锁，1正常")
     private String status;
 
     @ApiModelProperty(value = "最后登录时间")
