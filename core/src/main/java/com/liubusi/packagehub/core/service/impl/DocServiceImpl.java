@@ -1,9 +1,9 @@
 package com.liubusi.packagehub.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.liubusi.packagehub.core.pojo.entity.Doc;
+import com.liubusi.packagehub.common.pojo.entity.Doc;
 import com.liubusi.packagehub.core.mapper.DocMapper;
-import com.liubusi.packagehub.core.pojo.vo.DocVO;
+import com.liubusi.packagehub.common.pojo.vo.DocVO;
 import com.liubusi.packagehub.core.service.DocService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;

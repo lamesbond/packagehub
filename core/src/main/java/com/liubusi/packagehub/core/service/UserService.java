@@ -2,7 +2,7 @@ package com.liubusi.packagehub.core.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.liubusi.packagehub.core.pojo.entity.User;
+import com.liubusi.packagehub.common.pojo.entity.User;
 
 /**
  * <p>
@@ -14,5 +14,5 @@ import com.liubusi.packagehub.core.pojo.entity.User;
  */
 public interface UserService extends IService<User> {
 
-    Page<User> selectPage(Integer current, Integer size);
+    Page<User> login(Integer current, Integer size);
 }

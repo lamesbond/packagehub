@@ -1,0 +1,32 @@
+server:
+  port: 8120 # 服务端口
+
+spring:
+  application:
+    name: sms # 服务名
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.80.141:8848 # nacos服务地址
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  mail:
+    # 配置 SMTP 服务器地址
+    host: smtp.163.com
+    # 发送者邮箱
+    username: lamesbond
+    # 配置密码，注意不是真正的密码，而是刚刚申请到的授权码
+    password: saiwen777
+    # 默认的邮件编码为UTF-8
+    default-encoding: UTF-8
+    # 配置SSL 加密工厂
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        #表示开启 DEBUG 模式，这样，邮件发送过程的日志会在控制台打印出来，方便排查错误
+        debug: true

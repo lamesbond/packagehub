@@ -1,7 +1,7 @@
 package com.liubusi.packagehub.core.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.liubusi.packagehub.core.pojo.entity.User;
+import com.liubusi.packagehub.common.pojo.entity.User;
 
 /**
  * <p>

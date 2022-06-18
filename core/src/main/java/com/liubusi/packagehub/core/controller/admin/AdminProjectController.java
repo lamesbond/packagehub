@@ -1,8 +1,8 @@
 package com.liubusi.packagehub.core.controller.admin;
 
 import com.liubusi.packagehub.common.result.Result;
-import com.liubusi.packagehub.core.pojo.entity.Project;
-import com.liubusi.packagehub.core.pojo.vo.ProjectVO;
+import com.liubusi.packagehub.common.pojo.entity.Project;
+import com.liubusi.packagehub.common.pojo.vo.ProjectVO;
 import com.liubusi.packagehub.core.service.ProjectService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

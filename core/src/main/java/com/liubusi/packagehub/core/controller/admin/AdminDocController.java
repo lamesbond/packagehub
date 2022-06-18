@@ -1,14 +1,13 @@
 package com.liubusi.packagehub.core.controller.admin;
 
 import com.liubusi.packagehub.common.result.Result;
-import com.liubusi.packagehub.core.pojo.entity.Doc;
-import com.liubusi.packagehub.core.pojo.vo.DocVO;
+import com.liubusi.packagehub.common.pojo.entity.Doc;
+import com.liubusi.packagehub.common.pojo.vo.DocVO;
 import com.liubusi.packagehub.core.service.DocService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

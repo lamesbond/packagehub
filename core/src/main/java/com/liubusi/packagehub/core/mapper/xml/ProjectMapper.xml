@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.liubusi.packagehub.core.mapper.ProjectMapper">
 
-    <select id="listParentCategoryById" resultType="com.liubusi.packagehub.core.pojo.vo.ProjectVO">
+    <select id="listParentCategoryById" resultType="com.liubusi.packagehub.common.pojo.vo.ProjectVO">
         SELECT T1.level, T2.name
         FROM (
         SELECT
@@ -18,7 +18,7 @@
         ORDER BY T1.level DESC
     </select>
 
-    <select id="listMenuById" resultType="com.liubusi.packagehub.core.pojo.vo.ProjectVO">
+    <select id="listMenuById" resultType="com.liubusi.packagehub.common.pojo.vo.ProjectVO">
         SELECT T2.level, T3.*
         FROM(
                 SELECT @codes as _ids,

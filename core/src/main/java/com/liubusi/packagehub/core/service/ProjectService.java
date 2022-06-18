@@ -1,8 +1,8 @@
 package com.liubusi.packagehub.core.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.liubusi.packagehub.core.pojo.entity.Project;
-import com.liubusi.packagehub.core.pojo.vo.ProjectVO;
+import com.liubusi.packagehub.common.pojo.entity.Project;
+import com.liubusi.packagehub.common.pojo.vo.ProjectVO;
 
 import java.util.List;
 

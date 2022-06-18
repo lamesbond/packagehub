@@ -8,6 +8,7 @@
         <module>common</module>
         <module>gateway</module>
         <module>oss</module>
+        <module>sms</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

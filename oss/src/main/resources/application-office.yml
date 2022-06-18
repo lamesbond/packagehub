@@ -9,6 +9,9 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.80.141:8848 # nacos服务地址
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
   servlet:
     multipart:
       max-file-size: 100MB

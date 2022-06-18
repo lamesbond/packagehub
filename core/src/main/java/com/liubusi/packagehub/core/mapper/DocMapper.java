@@ -1,8 +1,8 @@
 package com.liubusi.packagehub.core.mapper;
 
-import com.liubusi.packagehub.core.pojo.entity.Doc;
+import com.liubusi.packagehub.common.pojo.entity.Doc;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.liubusi.packagehub.core.pojo.vo.DocVO;
+import com.liubusi.packagehub.common.pojo.vo.DocVO;
 
 import java.util.List;
 
