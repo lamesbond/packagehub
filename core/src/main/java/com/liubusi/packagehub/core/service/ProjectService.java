@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface ProjectService extends IService<Project> {
 
-    List<ProjectVO> listChildCategoryById(Long id);
+    List<ProjectVO> listChildCategoryById(Long id, Long userId);
 
     String listParentCategoryById(Long id);
 

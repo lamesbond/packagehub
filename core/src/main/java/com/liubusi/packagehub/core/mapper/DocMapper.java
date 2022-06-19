@@ -16,11 +16,13 @@ import java.util.List;
  */
 public interface DocMapper extends BaseMapper<Doc> {
 
+    List<Doc> listChildCategoryById(Long id, Long userId);
+
     List<DocVO> listParentCategoryById(Long id);
 
     List<DocVO> listMenuById(Long id);
 
-    void saveCategory(Long id, String title, Long parentId, String department, String description, String isDoc, String pubStatus);
+    void saveCategory(Long id, String title, Long parentId, String department, String description, String type, String pubStatus);
 
     void saveMenu(Long id, String title, Long parentId);
 
@@ -31,6 +33,5 @@ public interface DocMapper extends BaseMapper<Doc> {
     void updatePositionByAfter(Long id, Long destId);
 
     void updatePositionByInner(Long id, Long destId);
-
 
 }

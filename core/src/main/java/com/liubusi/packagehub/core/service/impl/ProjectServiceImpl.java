@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.liubusi.packagehub.core.mapper.ProjectMapper;
 import com.liubusi.packagehub.common.pojo.entity.Project;
 import com.liubusi.packagehub.common.pojo.vo.ProjectVO;
+import com.liubusi.packagehub.core.mapper.UserAuthMapper;
 import com.liubusi.packagehub.core.service.ProjectService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -35,9 +36,11 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     @Resource
     private ProjectMapper projectMapper;
 
+    @Resource
+    private UserAuthMapper userAuthMapper;
 
     @Override
-    public List<ProjectVO> listChildCategoryById(Long id) {
+    public List<ProjectVO> listChildCategoryById(Long id, Long userId) {
         //先查询redis中是否存在数据列表
         List<Project> projectList = null;
         List<ProjectVO> projectVOList = new ArrayList<>();
@@ -52,7 +55,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
 //        }
 
         log.info("从数据库中取值");
-        projectList = baseMapper.selectList(new QueryWrapper<Project>().eq("parent_id", id));
+        projectList = projectMapper.listChildCategoryById(id, userId);
 
         projectList.forEach(project -> {
             ProjectVO projectVO1 = new ProjectVO();
@@ -119,6 +122,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     @Override
     public void save(ProjectVO projectVO) {
         Long id = projectVO.getId();
+        Long userId = projectVO.getUserId();
         Long parentId = projectVO.getParentId();
         String name = projectVO.getName();
         String department = projectVO.getDepartment();
@@ -126,11 +130,16 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         String type = projectVO.getType();
         String pubStatus = projectVO.getPubStatus();
         String url = projectVO.getUrl();
+        List<Long> projectList = new ArrayList<>();
+        projectList.add(id);
 
         if (type.equals("file")) {
             projectMapper.saveFile(id, name, parentId, type, url);
+        } else if (type.equals("project")){
+            projectMapper.saveCategory(id, name, parentId);
+            userAuthMapper.authProject(userId, projectList);
         } else {
-            projectMapper.saveMenu(id, name, parentId);
+            log.info("不知所措");
         }
     }
 

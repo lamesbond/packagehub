@@ -2,6 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.liubusi.packagehub.core.mapper.ProjectMapper">
 
+    <select id="listChildCategoryById" resultType="com.liubusi.packagehub.common.pojo.entity.Project">
+        select * from project where parent_id = #{id}
+        <choose>
+            <when test="userId==222">
+            </when>
+            <otherwise>
+                <if test="id==0">
+                    and id in (select project_id from user_auth where user_id = #{userId})
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
     <select id="listParentCategoryById" resultType="com.liubusi.packagehub.common.pojo.vo.ProjectVO">
         SELECT T1.level, T2.name
         FROM (
@@ -41,12 +54,9 @@
         insert into project (`id`, `name`, `parent_id`, `type`, `url`)
         values (#{id}, #{name}, #{parentId},  #{type}, #{url})
     </insert>
-    <insert id="saveMenu">
-        INSERT INTO project (`id`, `name`, `parent_id`, `position`) VALUES (
-        #{id}, #{title}, #{parentId},
-        (select position from
-            (select IFNULL((select position from project where parent_id = #{parentId} order by position limit 1)-1, 888)position)position)
-        )
+    <insert id="saveCategory">
+        INSERT INTO project (`id`, `name`, `parent_id`) VALUES (
+        #{id}, #{title}, #{parentId})
     </insert>
 
     <delete id="remove">

@@ -1,8 +1,5 @@
 package com.liubusi.packagehub.common.pojo.vo;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
@@ -20,8 +17,10 @@ import java.util.List;
 public class ProjectVO implements Serializable{
 
     @ApiModelProperty(value = "id")
-    @TableId(value = "id")
     private Long id;
+
+    @ApiModelProperty(value = "userId")
+    private Long userId;
 
     @ApiModelProperty(value = "上级id")
     private Long parentId;
@@ -39,12 +38,10 @@ public class ProjectVO implements Serializable{
     private String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField(fill = FieldFill.INSERT)
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     @ApiModelProperty(value = "更新时间")
     private LocalDateTime updateTime;
 

@@ -20,7 +20,6 @@ import lombok.Data;
  * @since 2022-05-21
  */
 @Data
-//@EqualsAndHashCode(callSuper = false)
 @ApiModel(value="Doc对象", description="文档数据字典")
 public class Doc implements Serializable {
 
@@ -36,20 +35,14 @@ public class Doc implements Serializable {
     @ApiModelProperty(value = "标题")
     private String title;
 
-    @ApiModelProperty(value = "是不是文档，是就不展示下一级了，0不是，1是")
-    private String isDoc;
-
     @ApiModelProperty(value = "部门")
     private String department;
 
     @ApiModelProperty(value = "描述")
     private String description;
 
-    @ApiModelProperty(value = "排序id")
-    private Long position;
-
-    @ApiModelProperty(value = "内容")
-    private String content;
+    @ApiModelProperty(value = "类型，有doc，category，release_version，menu")
+    private String type;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(fill = FieldFill.INSERT)
@@ -63,5 +56,11 @@ public class Doc implements Serializable {
 
     @ApiModelProperty(value = "发布状态")
     private String pubStatus;
+
+    @ApiModelProperty(value = "排序id")
+    private Long position;
+
+    @ApiModelProperty(value = "内容")
+    private String content;
 
 }

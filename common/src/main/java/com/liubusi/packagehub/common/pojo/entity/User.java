@@ -28,7 +28,7 @@ public class User implements Serializable {
     private Long id;
 
     @ApiModelProperty(value = "用户名")
-    private String name;
+    private String username;
 
     @ApiModelProperty(value = "密码")
     private String password;
@@ -40,10 +40,13 @@ public class User implements Serializable {
     private String department;
 
     @ApiModelProperty(value = "用户角色")
-    private String role;
+    private String roles;
 
     @ApiModelProperty(value = "用户角色")
     private String status;
+
+    @ApiModelProperty(value = "头像")
+    private String avatar;
 
     @ApiModelProperty(value = "最后登录时间")
     private LocalDateTime lastLogin;

@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.liubusi.packagehub.common.pojo.entity.Doc;
 import com.liubusi.packagehub.core.mapper.DocMapper;
 import com.liubusi.packagehub.common.pojo.vo.DocVO;
+import com.liubusi.packagehub.core.mapper.UserAuthMapper;
+import com.liubusi.packagehub.core.mapper.UserMapper;
 import com.liubusi.packagehub.core.service.DocService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -36,9 +38,11 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
     @Resource
     private DocMapper docMapper;
 
+    @Resource
+    private UserAuthMapper userAuthMapper;
 
     @Override
-    public List<DocVO> listChildCategoryById(Long id) {
+    public List<DocVO> listChildCategoryById(Long id, Long userId) {
         //先查询redis中是否存在数据列表
         List<Doc> docList = null;
         List<DocVO> docVOList = new ArrayList<>();
@@ -53,7 +57,7 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
 //        }
 
         log.info("从数据库中取值");
-        docList = baseMapper.selectList(new QueryWrapper<Doc>().eq("parent_id", id));
+        docList = docMapper.listChildCategoryById(id, userId);
 
         docList.forEach(doc -> {
             DocVO docVO1 = new DocVO();
@@ -61,7 +65,7 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
             docVOList.add(docVO1);
         });
         docVOList.forEach(docVO -> {
-            if (docVO.getIsDoc().equals("1")) {
+            if (docVO.getType().equals("release_version")) {
                 docVO.setHasChildren(false);
             } else {
                 boolean hasChildren = this.hasChildren(docVO.getId());
@@ -120,17 +124,26 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
     @Override
     public void save(DocVO docVO) {
         Long id = docVO.getId();
+        Long userId = docVO.getUserId();
         Long parentId = docVO.getParentId();
         String title = docVO.getTitle();
         String department = docVO.getDepartment();
         String description = docVO.getDescription();
-        String isDoc = docVO.getIsDoc();
+        String type = docVO.getType();
         String pubStatus = docVO.getPubStatus();
 
-        if (!StringUtils.isEmpty(department) || !StringUtils.isEmpty(description) || !StringUtils.isEmpty(isDoc)) {
-            docMapper.saveCategory(id, title, parentId, department, description, isDoc, pubStatus);
-        } else {
+        List<Long> docList = new ArrayList<>();
+        docList.add(id);
+
+        if (type.equals("doc")) {
+            docMapper.saveCategory(id, title, parentId, department, description, type, pubStatus);
+            userAuthMapper.authDoc(userId, docList);
+        } else if (type.equals("category") || type.equals("release_version")){
+            docMapper.saveCategory(id, title, parentId, department, description, type, pubStatus);
+        } else if (type.equals("menu")) {
             docMapper.saveMenu(id, title, parentId);
+        } else {
+            log.info("不知所措");
         }
     }
 

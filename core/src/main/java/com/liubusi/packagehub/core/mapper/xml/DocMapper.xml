@@ -2,6 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.liubusi.packagehub.core.mapper.DocMapper">
 
+    <select id="listChildCategoryById" resultType="com.liubusi.packagehub.common.pojo.entity.Doc">
+        select * from doc where parent_id = #{id}
+        <choose>
+            <when test="userId==222">
+            </when>
+            <otherwise>
+                <if test="id==0">
+                    and id in (select doc_id from user_auth where user_id = #{userId})
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
     <select id="listParentCategoryById" resultType="com.liubusi.packagehub.common.pojo.vo.DocVO">
         SELECT T1.level, T2.title
         FROM (
@@ -38,8 +51,8 @@
     </select>
 
     <insert id="saveCategory">
-        insert into doc (`id`, `title`, `parent_id`, `department`, `description`, `is_doc`, `pub_status`)
-        values (#{id}, #{title}, #{parentId}, #{department}, #{description}, #{isDoc}, #{pubStatus})
+        insert into doc (`id`, `title`, `parent_id`, `department`, `description`, `type`, `pub_status`)
+        values (#{id}, #{title}, #{parentId}, #{department}, #{description}, #{type}, #{pubStatus})
     </insert>
     <insert id="saveMenu">
         INSERT INTO doc (`id`, `title`, `parent_id`, `position`) VALUES (

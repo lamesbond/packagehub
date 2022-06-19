@@ -20,5 +20,4 @@ public interface UserAuthMapper extends BaseMapper<UserAuth> {
     void authProject(Long userId, List<Long> projectList);
 
     void authDoc(Long userId, List<Long> docList);
-
 }

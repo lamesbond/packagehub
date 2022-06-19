@@ -31,10 +31,10 @@ public class AdminDocController {
     private DocService docService;
 
     @ApiOperation("获取id下的下一级子节点，不递归")
-    @GetMapping("/listChildCategoryById/{id}")
+    @GetMapping("/listChildCategoryById/{id}/{userId}")
     public Result listChildCategoryById(@ApiParam(value = "节点id", required = true)
-            @PathVariable Long id){
-        List<DocVO> docVOList = docService.listChildCategoryById(id);
+            @PathVariable Long id, @PathVariable Long userId){
+        List<DocVO> docVOList = docService.listChildCategoryById(id, userId);
         return Result.ok().data("childList", docVOList);
     }
 

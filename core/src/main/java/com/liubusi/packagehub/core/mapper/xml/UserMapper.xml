@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.liubusi.packagehub.core.mapper.UserMapper">
+    <insert id="saveFile">
+        DROP PROCEDURE IF EXISTS check_child;
+        CREATE PROCEDURE check_child()
+        BEGIN
+            DECLARE flag INT DEFAULT 0;
+            DECLARE temp_id BIGINT(11);
+            DECLARE idList CURSOR FOR (SELECT id FROM doc WHERE parent_id = 0);
+            DECLARE CONTINUE HANDLER FOR NOT FOUND SET flag = 1;
+            OPEN idList;
+            FETCH idList INTO temp_id;
+            WHILE flag != 1 DO
+                    -- 				select ifnull((select id from doc where parent_id = temp_id),'false');
+                    select case when (select id from doc where parent_id = temp_id limit 1) is null then 'no' else 'yes' end as haschildren, temp_id as id;
+                    FETCH idList INTO temp_id;
+                END WHILE;
+            CLOSE idList;
+        END;
+
+        //执行存储过程
+        CALL check_child();
+    </insert>
 
 </mapper>

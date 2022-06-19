@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface DocService extends IService<Doc> {
 
-    List<DocVO> listChildCategoryById(Long id);
+    List<DocVO> listChildCategoryById(Long id, Long userId);
 
     String listParentCategoryById(Long id);
 

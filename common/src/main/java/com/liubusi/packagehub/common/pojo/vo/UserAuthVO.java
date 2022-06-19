@@ -13,7 +13,6 @@ import java.util.List;
 public class UserAuthVO implements Serializable{
 
     @ApiModelProperty(value = "id")
-    @TableId(value = "id")
     private Long userId;
 
     @ApiModelProperty(value = "项目ID列表")
