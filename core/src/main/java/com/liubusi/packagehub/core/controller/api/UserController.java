@@ -1,4 +1,4 @@
-package com.liubusi.packagehub.core.controller.admin;
+package com.liubusi.packagehub.core.controller.api;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.liubusi.packagehub.common.pojo.entity.User;
@@ -24,11 +24,11 @@ import javax.annotation.Resource;
  * @author liubusi
  * @since 2022-05-22
  */
-@Api(tags = "后台用户管理")
+@Api(tags = "用户管理")
 @RestController
-@RequestMapping("/admin/core/user")
+@RequestMapping("/api/core/user")
 @Slf4j
-public class AdminUserController {
+public class UserController {
 
     @Resource
     private UserService userService;
