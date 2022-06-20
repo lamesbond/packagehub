@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/api/core/dict")
 @Slf4j
-public class DocController {
+public class ApiDocController {
     @Resource
     private DocService dictService;
 

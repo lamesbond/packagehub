@@ -13,4 +13,6 @@ import com.liubusi.packagehub.common.pojo.vo.EmailVO;
 public interface EmailService {
 
     void send(EmailVO emailVO);
+
+    void send(String email);
 }

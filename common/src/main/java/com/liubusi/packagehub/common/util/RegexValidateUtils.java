@@ -29,7 +29,7 @@ public class RegexValidateUtils {
      * @return
      */
     public static boolean checkEmail(String email) {
-        String regex = "^\\w+[-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$ ";
+        String regex = "^\\w+((-\\w+)|(\\.\\w+))*\\@[A-Za-z0-9]+((\\.|-)[A-Za-z0-9]+)*\\.[A-Za-z0-9]+$";
         return check(email, regex);
     }
 

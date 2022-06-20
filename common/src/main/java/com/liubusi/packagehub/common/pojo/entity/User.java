@@ -23,6 +23,9 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final Integer STATUS_NORMAL = 1;
+    public static final Integer STATUS_LOCKED = 0;
+
     @ApiModelProperty(value = "id")
     @TableId(value = "id")
     private Long id;
@@ -43,7 +46,7 @@ public class User implements Serializable {
     private String roles;
 
     @ApiModelProperty(value = "用户角色")
-    private String status;
+    private Integer status;
 
     @ApiModelProperty(value = "头像")
     private String avatar;

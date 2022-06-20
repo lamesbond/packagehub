@@ -19,13 +19,13 @@ public enum ResponseEnum {
 
     //-2xx 参数校验
     BORROW_AMOUNT_NULL_ERROR(-201, "借款额度不能为空"),
-    MOBILE_NULL_ERROR(-202, "手机号码不能为空"),
-    MOBILE_ERROR(-203, "手机号码不正确"),
+    EMAIL_NULL_ERROR(-202, "邮箱不能为空"),
+    EMAIL_ERROR(-203, "邮箱不正确"),
     PASSWORD_NULL_ERROR(204, "密码不能为空"),
     CODE_NULL_ERROR(205, "验证码不能为空"),
     CODE_ERROR(206, "验证码错误"),
-    MOBILE_EXIST_ERROR(207, "手机号已被注册"),
-    LOGIN_MOBILE_ERROR(208, "用户不存在"),
+    EMAIL_EXIST_ERROR(207, "邮箱已被注册"),
+    LOGIN_EMAIL_ERROR(208, "用户不存在"),
     LOGIN_PASSWORD_ERROR(209, "密码错误"),
     LOGIN_LOKED_ERROR(210, "用户被锁定"),
     LOGIN_AUTH_ERROR(-211, "未登录"),

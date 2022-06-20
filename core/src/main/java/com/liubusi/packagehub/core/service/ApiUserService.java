@@ -15,14 +15,11 @@ import com.liubusi.packagehub.common.pojo.vo.UserVO;
  * @author liubusi
  * @since 2022-05-21
  */
-public interface UserService extends IService<User> {
+public interface ApiUserService extends IService<User> {
 
-    Page<User> selectPage(Integer current, Integer size);
+    void register(UserVO userVO);
 
-    void auth(UserAuthVO userAuthVO);
+    UserVO login(UserVO userVO, String ip);
 
-    String login(UserVO userVO);
-
-    UserInfoVO getInfo(String token);
-
+    boolean checkEmail(String email);
 }

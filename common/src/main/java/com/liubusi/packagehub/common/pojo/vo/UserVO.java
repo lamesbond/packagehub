@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 @ApiModel(description="UserVO对象")
 public class UserVO implements Serializable{
 
+    public static final Integer STATUS_NORMAL = 1;
+    public static final Integer STATUS_LOCKED = 0;
+
     @ApiModelProperty(value = "id")
     private Long id;
 
@@ -32,10 +35,13 @@ public class UserVO implements Serializable{
     private String roles;
 
     @ApiModelProperty(value = "用户状态，0被锁定，1正常")
-    private String status;
+    private Integer status;
 
     @ApiModelProperty(value = "头像")
     private String avatar;
+
+    @ApiModelProperty(value = "JWT访问令牌")
+    private String token;
 
     @ApiModelProperty(value = "最后登录时间")
     private LocalDateTime lastLogin;
