@@ -64,7 +64,7 @@ public class EmailServiceImpl implements EmailService {
         //邮箱是否注册
         boolean result = coreUserClient.checkEmail(email);
         System.out.println("result = " + result);
-        Assert.isTrue(result == false, ResponseEnum.EMAIL_EXIST_ERROR);
+        Assert.isTrue(result == true, ResponseEnum.EMAIL_EXIST_ERROR);
 
         String code = (String)redisTemplate.opsForValue().get("packagehub:sms:code:" + email);
         if(!StringUtils.isEmpty(code)) {

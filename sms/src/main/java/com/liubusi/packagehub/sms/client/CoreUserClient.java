@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(value = "core", fallback = CoreUserClientFallback.class)
 public interface CoreUserClient {
 
-    @GetMapping("/api/core/userInfo/checkEmail/{email}")
+    @GetMapping("/api/core/user/checkEmail/{email}")
     boolean checkEmail(@PathVariable String email);
 }

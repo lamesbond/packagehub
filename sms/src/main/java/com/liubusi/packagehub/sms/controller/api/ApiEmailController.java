@@ -19,7 +19,7 @@ public class ApiEmailController {
     @Resource
     private EmailService emailService;
 
-    @ApiOperation("发送邮件")
+    @ApiOperation("发送邮件验证码")
     @GetMapping("/send/{email}")
     public Result send(
             @ApiParam(value = "邮件内容")

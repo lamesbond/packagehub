@@ -1,29 +1,19 @@
 package com.liubusi.packagehub.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.liubusi.packagehub.common.exception.Assert;
 import com.liubusi.packagehub.common.pojo.entity.User;
-import com.liubusi.packagehub.common.pojo.vo.UserAuthVO;
-import com.liubusi.packagehub.common.pojo.vo.UserInfoVO;
 import com.liubusi.packagehub.common.pojo.vo.UserVO;
 import com.liubusi.packagehub.common.result.ResponseEnum;
 import com.liubusi.packagehub.common.util.JwtUtils;
 import com.liubusi.packagehub.common.util.MD5;
-import com.liubusi.packagehub.core.mapper.UserAuthMapper;
 import com.liubusi.packagehub.core.mapper.UserMapper;
 import com.liubusi.packagehub.core.service.ApiUserService;
-import com.liubusi.packagehub.core.service.UserService;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * <p>
@@ -46,12 +36,12 @@ public class ApiUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("email", userVO.getEmail());
         Integer count = baseMapper.selectCount(queryWrapper);
-        //MOBILE_EXIST_ERROR(-207, "邮箱已被注册"),
-        Assert.isTrue(count == 0, ResponseEnum.EMAIL_EXIST_ERROR);
+        //EMAIL_EXIST_ERROR(-207, "邮箱已被注册"),
+        Assert.isTrue(count > 0, ResponseEnum.EMAIL_EXIST_ERROR);
 
         //插入用户基本信息
         User user = new User();
-        user.setUsername(userVO.getUsername());
+        user.setUsername(userVO.getEmail());
         user.setEmail(userVO.getEmail());
         user.setPassword(MD5.encrypt(userVO.getPassword()));
         user.setStatus(userVO.STATUS_NORMAL); //正常
