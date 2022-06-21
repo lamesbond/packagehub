@@ -16,11 +16,11 @@ import java.util.List;
  */
 public interface DocService extends IService<Doc> {
 
-    List<DocVO> listChildCategoryById(Long id, Long userId);
+    List<DocVO> listNextChildNode(Long id, Long userId);
 
-    String listParentCategoryById(Long id);
+    String listParentNode(Long id);
 
-    List<DocVO> listMenuById(Long id);
+    List<DocVO> listAllChildNode(Long id);
 
     void save(DocVO docVO);
 

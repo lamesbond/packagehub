@@ -2,25 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.liubusi.packagehub.core.mapper.ProjectMapper">
 
-    <select id="listChildCategoryById" resultType="com.liubusi.packagehub.common.pojo.entity.Project">
-        DROP PROCEDURE IF EXISTS listChildCategoryById;
-        create procedure listChildCategoryById(in proid bigint,in userid bigint)
-        BEGIN
-	declare role varchar(255);
-        select roles into role from user where id = userid;
-        if (userid = 0) then
-        select * from project where parent_id = proid and pub_status = 1;
-        elseif (role = 'admin') then
-        select * from project where parent_id = proid;
-        else
-        select * from project where parent_id = proid and id in (select project_id from user_auth where user_id = userid);
-        end if;
-        END
+    <select id="listNextChildNode" resultType="com.liubusi.packagehub.common.pojo.entity.Project">
+#         DROP PROCEDURE IF EXISTS listNextChildNode;
+#         create procedure listNextChildNode(in proid bigint,in userid bigint)
+#         BEGIN
+# 	declare role varchar(255);
+#         select roles into role from user where id = userid;
+#         if (userid = 0) then
+#         select * from project where parent_id = proid and pub_status = 1;
+#         elseif (role = 'admin') then
+#         select * from project where parent_id = proid;
+#         else
+#         select * from project where parent_id = proid and id in (select project_id from user_auth where user_id = userid);
+#         end if;
+#         END
 
-        CALL listChildCategoryById(#{id},#{userId})
+        CALL listNextChildNode(#{id},#{userId});
     </select>
 
-    <select id="listParentCategoryById" resultType="com.liubusi.packagehub.common.pojo.vo.ProjectVO">
+    <select id="listParentNode" resultType="com.liubusi.packagehub.common.pojo.vo.ProjectVO">
         SELECT T1.level, T2.name
         FROM (
         SELECT
@@ -36,7 +36,7 @@
         ORDER BY T1.level DESC
     </select>
 
-    <select id="listMenuById" resultType="com.liubusi.packagehub.common.pojo.vo.ProjectVO">
+    <select id="listAllChildNode" resultType="com.liubusi.packagehub.common.pojo.vo.ProjectVO">
         SELECT T2.level, T3.*
         FROM(
                 SELECT @codes as _ids,
@@ -60,8 +60,8 @@
         values (#{id}, #{name}, #{parentId},  #{type}, #{url})
     </insert>
     <insert id="saveCategory">
-        INSERT INTO project (`id`, `name`, `parent_id`) VALUES (
-        #{id}, #{title}, #{parentId})
+        INSERT INTO project (`id`, `name`, `parent_id`, `department`, `description`, `pub_status`) VALUES (
+        #{id}, #{title}, #{parentId}, #{department}, #{description}, #{pubStatus})
     </insert>
 
     <delete id="remove">
@@ -82,29 +82,5 @@
         )id
         )
     </delete>
-
-    <update id="updatePositionByBefore">
-        update project set position = position -1 where parent_id =
-          (select parent_id from (select parent_id from project where id = #{destId})a)
-          and position &lt; (select position from (select position from project where id = #{destId})b);
-        update project set position =
-          (select position from (select (select position from project where id = #{destId})-1 position) position),
-          parent_id = (select parent_id from (select parent_id from project where id = #{destId}) parent_id)
-          where id = #{id};
-    </update>
-    <update id="updatePositionByAfter">
-        update project set position = position +1 where parent_id =
-          (select parent_id from (select parent_id from project where id = #{destId})a)
-          and position > (select position from (select position from project where id = #{destId})b);
-        update project set position =
-          (select position from (select (select position from project where id = #{destId})+1 position) position),
-          parent_id = (select parent_id from (select parent_id from project where id = #{destId}) parent_id)
-          where id = #{id};
-    </update>
-    <update id="updatePositionByInner">
-        update project set position =
-          (select position from (select IFNULL((select min(position) from project where parent_id = #{destId})-1, 888)position)position),
-          parent_id = #{destId} where id = #{id};
-    </update>
 
 </mapper>

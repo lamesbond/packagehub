@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.liubusi.packagehub.core.mapper.DocMapper">
 
-    <select id="listChildCategoryById" resultType="com.liubusi.packagehub.common.pojo.entity.Doc">
+    <select id="listNextChildNode" resultType="com.liubusi.packagehub.common.pojo.entity.Doc">
         select * from doc where parent_id = #{id}
         <choose>
             <when test="userId==222">
@@ -15,7 +15,7 @@
         </choose>
     </select>
 
-    <select id="listParentCategoryById" resultType="com.liubusi.packagehub.common.pojo.vo.DocVO">
+    <select id="listParentNode" resultType="com.liubusi.packagehub.common.pojo.vo.DocVO">
         SELECT T1.level, T2.title
         FROM (
         SELECT
@@ -31,7 +31,7 @@
         ORDER BY T1.level DESC
     </select>
 
-    <select id="listMenuById" resultType="com.liubusi.packagehub.common.pojo.vo.DocVO">
+    <select id="listAllChildNode" resultType="com.liubusi.packagehub.common.pojo.vo.DocVO">
         SELECT T2.level, T3.*
         FROM(
                 SELECT @codes as _ids,
@@ -55,8 +55,8 @@
         values (#{id}, #{title}, #{parentId}, #{department}, #{description}, #{type}, #{pubStatus})
     </insert>
     <insert id="saveMenu">
-        INSERT INTO doc (`id`, `title`, `parent_id`, `position`) VALUES (
-        #{id}, #{title}, #{parentId},
+        INSERT INTO doc (`id`, `title`, `parent_id`, `type`, `position`) VALUES (
+        #{id}, #{title}, #{parentId}, #{type},
         (select position from
             (select IFNULL((select position from doc where parent_id = #{parentId} order by position limit 1)-1, 888)position)position)
         )

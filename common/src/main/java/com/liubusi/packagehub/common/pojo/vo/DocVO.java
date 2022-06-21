@@ -46,6 +46,9 @@ public class DocVO implements Serializable{
     @ApiModelProperty(value = "发布状态")
     private String pubStatus;
 
+    @ApiModelProperty(value = "发行范围，0私有，1公开")
+    private String pubRange;
+
     @ApiModelProperty(value = "排序id")
     private Long position;
 

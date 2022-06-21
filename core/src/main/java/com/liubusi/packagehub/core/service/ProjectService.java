@@ -16,16 +16,14 @@ import java.util.List;
  */
 public interface ProjectService extends IService<Project> {
 
-    List<ProjectVO> listChildCategoryById(Long id, Long userId);
+    List<ProjectVO> listNextChildNode(Long id, Long userId);
 
-    String listParentCategoryById(Long id);
+    String listParentNode(Long id);
 
-    List<ProjectVO> listMenuById(Long id);
+    List<ProjectVO> listAllChildNode(Long id);
 
     void save(ProjectVO projectVO);
 
     void remove(Long id);
-
-//    void update(ProjectVO projectVO);
 
 }

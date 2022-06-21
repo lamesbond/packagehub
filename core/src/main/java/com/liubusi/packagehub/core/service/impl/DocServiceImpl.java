@@ -42,7 +42,7 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
     private UserAuthMapper userAuthMapper;
 
     @Override
-    public List<DocVO> listChildCategoryById(Long id, Long userId) {
+    public List<DocVO> listNextChildNode(Long id, Long userId) {
         //先查询redis中是否存在数据列表
         List<Doc> docList = null;
         List<DocVO> docVOList = new ArrayList<>();
@@ -57,7 +57,7 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
 //        }
 
         log.info("从数据库中取值");
-        docList = docMapper.listChildCategoryById(id, userId);
+        docList = docMapper.listNextChildNode(id, userId);
 
         docList.forEach(doc -> {
             DocVO docVO1 = new DocVO();
@@ -85,10 +85,10 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
     }
 
     @Override
-    public String listParentCategoryById(Long id) {
+    public String listParentNode(Long id) {
 
         log.info("从数据库中取值");
-        List<DocVO> docVOList = docMapper.listParentCategoryById(id);
+        List<DocVO> docVOList = docMapper.listParentNode(id);
         String result = "";
 
         for (DocVO docVO : docVOList) {
@@ -103,8 +103,8 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
     }
 
     @Override
-    public List<DocVO> listMenuById(Long id) {
-        List<DocVO> result = docMapper.listMenuById(id);
+    public List<DocVO> listAllChildNode(Long id) {
+        List<DocVO> result = docMapper.listAllChildNode(id);
         List<DocVO> finalResult = new ArrayList<>();
 
         for (DocVO firstDocVO : result) {
@@ -123,25 +123,25 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
 
     @Override
     public void save(DocVO docVO) {
+        Doc doc = new Doc();
+        BeanUtils.copyProperties(docVO, doc);
+
         Long id = docVO.getId();
         Long userId = docVO.getUserId();
         Long parentId = docVO.getParentId();
         String title = docVO.getTitle();
-        String department = docVO.getDepartment();
-        String description = docVO.getDescription();
         String type = docVO.getType();
-        String pubStatus = docVO.getPubStatus();
 
         List<Long> docList = new ArrayList<>();
         docList.add(id);
 
         if (type.equals("doc")) {
-            docMapper.saveCategory(id, title, parentId, department, description, type, pubStatus);
+            docMapper.insert(doc);
             userAuthMapper.authDoc(userId, docList);
         } else if (type.equals("category") || type.equals("release_version")){
-            docMapper.saveCategory(id, title, parentId, department, description, type, pubStatus);
+            docMapper.insert(doc);
         } else if (type.equals("menu")) {
-            docMapper.saveMenu(id, title, parentId);
+            docMapper.saveMenu(id, title, parentId, type);
         } else {
             log.info("不知所措");
         }

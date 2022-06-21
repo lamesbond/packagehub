@@ -31,27 +31,27 @@ public class AdminDocController {
     private DocService docService;
 
     @ApiOperation("获取id下的下一级子节点，不递归")
-    @GetMapping("/listChildCategoryById/{id}/{userId}")
-    public Result listChildCategoryById(@ApiParam(value = "节点id", required = true)
+    @GetMapping("/listNextChildNode/{id}/{userId}")
+    public Result listChildNodeById(@ApiParam(value = "节点id", required = true)
             @PathVariable Long id, @PathVariable Long userId){
-        List<DocVO> docVOList = docService.listChildCategoryById(id, userId);
+        List<DocVO> docVOList = docService.listNextChildNode(id, userId);
         return Result.ok().data("childList", docVOList);
     }
 
     @ApiOperation("获取id的所有父节点，递归到顶级节点")
-    @GetMapping("/listParentCategoryById/{id}")
-    public Result listParentCategoryById(@ApiParam(value = "节点id", required = true)
+    @GetMapping("/listParentNode/{id}")
+    public Result listParentNode(@ApiParam(value = "节点id", required = true)
                                        @PathVariable Long id){
-        String result = docService.listParentCategoryById(id);
+        String result = docService.listParentNode(id);
         return Result.ok().data("docPath", result);
     }
 
     @ApiOperation("根据id递归获取文档目录")
-    @GetMapping("/listMenuById/{id}")
-    public Result listMenuById(
+    @GetMapping("/listAllChildNode/{id}")
+    public Result listAllChildNode(
             @ApiParam(value = "文档id", required = true)
             @PathVariable Long id) {
-        List<DocVO> result = docService.listMenuById(id);
+        List<DocVO> result = docService.listAllChildNode(id);
         return Result.ok().data("docMenu", result);
     }
 

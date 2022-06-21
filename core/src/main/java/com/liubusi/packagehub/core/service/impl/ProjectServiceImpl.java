@@ -40,7 +40,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     private UserAuthMapper userAuthMapper;
 
     @Override
-    public List<ProjectVO> listChildCategoryById(Long id, Long userId) {
+    public List<ProjectVO> listNextChildNode(Long id, Long userId) {
         //先查询redis中是否存在数据列表
         List<Project> projectList = null;
         List<ProjectVO> projectVOList = new ArrayList<>();
@@ -55,7 +55,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
 //        }
 
         log.info("从数据库中取值");
-        projectList = projectMapper.listChildCategoryById(id, userId);
+        projectList = projectMapper.listNextChildNode(id, userId);
 
         projectList.forEach(project -> {
             ProjectVO projectVO1 = new ProjectVO();
@@ -83,10 +83,10 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     }
 
     @Override
-    public String listParentCategoryById(Long id) {
+    public String listParentNode(Long id) {
 
         log.info("从数据库中取值");
-        List<ProjectVO> projectVOList = projectMapper.listParentCategoryById(id);
+        List<ProjectVO> projectVOList = projectMapper.listParentNode(id);
         String result = "";
 
         for (ProjectVO projectVO : projectVOList) {
@@ -101,8 +101,8 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     }
 
     @Override
-    public List<ProjectVO> listMenuById(Long id) {
-        List<ProjectVO> result = projectMapper.listMenuById(id);
+    public List<ProjectVO> listAllChildNode(Long id) {
+        List<ProjectVO> result = projectMapper.listAllChildNode(id);
         List<ProjectVO> finalResult = new ArrayList<>();
 
         for (ProjectVO firstprojectVO : result) {
@@ -121,22 +121,27 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
 
     @Override
     public void save(ProjectVO projectVO) {
+        Project project = new Project();
+        BeanUtils.copyProperties(projectVO, project);
+
         Long id = projectVO.getId();
         Long userId = projectVO.getUserId();
-        Long parentId = projectVO.getParentId();
-        String name = projectVO.getName();
-        String department = projectVO.getDepartment();
-        String description = projectVO.getDescription();
+//        Long parentId = projectVO.getParentId();
+//        String name = projectVO.getName();
+//        String department = projectVO.getDepartment();
+//        String description = projectVO.getDescription();
         String type = projectVO.getType();
-        String pubStatus = projectVO.getPubStatus();
-        String url = projectVO.getUrl();
+//        String pubStatus = projectVO.getPubStatus();
+//        String url = projectVO.getUrl();
         List<Long> projectList = new ArrayList<>();
         projectList.add(id);
 
         if (type.equals("file")) {
-            projectMapper.saveFile(id, name, parentId, type, url);
-        } else if (type.equals("project")){
-            projectMapper.saveCategory(id, name, parentId);
+            projectMapper.insert(project);
+//            projectMapper.saveFile(id, name, parentId, type, url);
+        } else if (type.equals("project") || type.equals("category")){
+            projectMapper.insert(project);
+//            projectMapper.saveCategory(id, name, parentId, department, description, pubStatus);
             userAuthMapper.authProject(userId, projectList);
         } else {
             log.info("不知所措");
@@ -147,16 +152,6 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     public void remove(Long id) {
         projectMapper.remove(id);
     }
-
-//    @Override
-//    public void update(ProjectVO projectVO) {
-//        Long id = projectVO.getId();
-//        Project project = new Project();
-//        BeanUtils.copyProperties(projectVO, project);
-//        UpdateWrapper<Project> projectUpdateWrapper= new UpdateWrapper<>();
-//        projectUpdateWrapper.set();
-//        projectMapper.update();
-//    }
 
     private boolean hasChildren(Long id) {
         QueryWrapper<Project> projectQueryWrapper = new QueryWrapper<>();

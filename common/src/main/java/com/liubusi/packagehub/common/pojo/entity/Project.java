@@ -61,6 +61,9 @@ public class Project implements Serializable {
     @ApiModelProperty(value = "发布状态，0没发布，1发布了")
     private String pubStatus;
 
+    @ApiModelProperty(value = "发行范围，0私有，1公开")
+    private String pubRange;
+
     @ApiModelProperty(value = "文件url")
     private String url;
 

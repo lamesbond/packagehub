@@ -31,36 +31,36 @@ public class ApiProjectController {
     private ProjectService projectService;
 
     @ApiOperation("获取id下的下一级子节点，不递归")
-    @GetMapping("/listChildCategoryById/{id}/{userId}")
-    public Result listChildCategoryById(@ApiParam(value = "节点id", required = true)
+    @GetMapping("/listNextChildNode/{id}/{userId}")
+    public Result listNextChildNode(@ApiParam(value = "节点id", required = true)
                                               @PathVariable Long id,
                                                @ApiParam(value = "用户id", required = true)
                                                @PathVariable Long userId){
-        List<ProjectVO> projectVOList = projectService.listChildCategoryById(id, userId);
+        List<ProjectVO> projectVOList = projectService.listNextChildNode(id, userId);
         return Result.ok().data("childList", projectVOList);
     }
 
     @ApiOperation("获取id的所有父节点，递归到顶级节点")
-    @GetMapping("/listParentCategoryById/{id}")
-    public Result listParentCategoryById(@ApiParam(value = "节点id", required = true)
+    @GetMapping("/listParentNode/{id}")
+    public Result listParentNode(@ApiParam(value = "节点id", required = true)
                                          @PathVariable Long id){
-        String result = projectService.listParentCategoryById(id);
+        String result = projectService.listParentNode(id);
         return Result.ok().data("projectPath", result);
     }
 
-    @ApiOperation("根据id递归获取文档目录")
-    @GetMapping("/listMenuById/{id}")
-    public Result listMenuById(
-            @ApiParam(value = "文档id", required = true)
+    @ApiOperation("根据id递归获取所有子节点")
+    @GetMapping("/listAllChildNode/{id}")
+    public Result listAllChildNode(
+            @ApiParam(value = "项目id", required = true)
             @PathVariable Long id) {
-        List<ProjectVO> result = projectService.listMenuById(id);
-        return Result.ok().data("projectMenu", result);
+        List<ProjectVO> result = projectService.listAllChildNode(id);
+        return Result.ok().data("childList", result);
     }
 
-    @ApiOperation("根据id获取文档标题，内容等")
+    @ApiOperation("根据id获取项目名，内容等")
     @GetMapping("/getOne/{id}")
     public Result getOne(
-            @ApiParam(value = "文档id", required = true)
+            @ApiParam(value = "项目id", required = true)
             @PathVariable Long id) {
         Project project = projectService.getById(id);
         return Result.ok().data("project", project);
