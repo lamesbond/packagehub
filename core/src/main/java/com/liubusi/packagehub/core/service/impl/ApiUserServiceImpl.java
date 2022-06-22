@@ -67,6 +67,7 @@ public class ApiUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         //生成token
         String token = JwtUtils.createToken(user.getId(), user.getUsername());
         UserVO userVO1 = new UserVO();
+        userVO1.setId(user.getId());
         userVO1.setToken(token);
         userVO1.setUsername(user.getUsername());
         userVO1.setAvatar(user.getAvatar());

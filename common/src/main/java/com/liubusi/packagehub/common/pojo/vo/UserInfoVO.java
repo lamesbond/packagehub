@@ -12,6 +12,9 @@ import java.io.Serializable;
 @ApiModel(description="UserVO对象")
 public class UserInfoVO implements Serializable{
 
+    @ApiModelProperty(value = "用户id")
+    private String id;
+
     @ApiModelProperty(value = "用户名")
     private String username;
 

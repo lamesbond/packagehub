@@ -44,17 +44,6 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         List<Project> projectList = null;
         List<ProjectVO> projectVOList = new ArrayList<>();
 
-        //先查询redis中是否存在数据列表
-        try {
-            projectVOList = (List<ProjectVO>)redisTemplate.opsForValue().get("packagehub:core:projectVOList:" + id);
-            if (projectVOList != null) {
-                log.info("从redis中取值");
-                return projectVOList;
-            }
-        } catch (Exception e) {
-            log.error("redis服务异常：" + ExceptionUtils.getStackTrace(e));;//此处不抛出异常，继续执行后面的代码
-        }
-
         log.info("从数据库中取值");
         projectVOList = projectMapper.listNextChildNode(id, userId);
 

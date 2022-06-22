@@ -47,17 +47,6 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
         List<Doc> docList = null;
         List<DocVO> docVOList = new ArrayList<>();
 
-        //先查询redis中是否存在数据列表
-        try {
-            docVOList = (List<DocVO>)redisTemplate.opsForValue().get("packagehub:core:docVO:" + id);
-            if (docList != null) {
-                log.info("从redis中取值");
-                return docVOList;
-            }
-        } catch (Exception e) {
-            log.error("redis服务异常：" + ExceptionUtils.getStackTrace(e));;//此处不抛出异常，继续执行后面的代码
-        }
-
         log.info("从数据库中取值");
         docVOList = docMapper.listNextChildNode(id, userId);
         
