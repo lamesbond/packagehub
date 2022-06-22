@@ -16,15 +16,11 @@ import java.util.List;
  */
 public interface ProjectMapper extends BaseMapper<Project> {
 
-    List<Project> listNextChildNode(Long id, Long userId);
+    List<ProjectVO> listNextChildNode(Long id, Long userId);
 
     List<ProjectVO> listParentNode(Long id);
 
     List<ProjectVO> listAllChildNode(Long id);
-
-    void saveFile(Long id, String name, Long parentId, String type, String url);
-
-    void saveCategory(Long id, String title, Long parentId, String department, String description, String pubStatus);
 
     void remove(Long id);
 

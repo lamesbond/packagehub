@@ -21,7 +21,7 @@ import java.util.List;
  * @author liubusi
  * @since 2022-05-22
  */
-@Api(tags = "获取公共和私有项目")
+@Api(tags = "文件获取")
 @RestController
 @RequestMapping("/api/core/project")
 @Slf4j

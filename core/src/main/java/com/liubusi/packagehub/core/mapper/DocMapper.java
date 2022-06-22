@@ -16,13 +16,11 @@ import java.util.List;
  */
 public interface DocMapper extends BaseMapper<Doc> {
 
-    List<Doc> listNextChildNode(Long id, Long userId);
+    List<DocVO> listNextChildNode(Long id, Long userId);
 
     List<DocVO> listParentNode(Long id);
 
     List<DocVO> listAllChildNode(Long id);
-
-    void saveCategory(Long id, String title, Long parentId, String department, String description, String type, String pubStatus);
 
     void saveMenu(Long id, String title, Long parentId, String type);
 

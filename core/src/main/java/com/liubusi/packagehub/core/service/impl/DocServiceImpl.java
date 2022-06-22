@@ -2,6 +2,7 @@ package com.liubusi.packagehub.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.liubusi.packagehub.common.pojo.entity.Doc;
+import com.liubusi.packagehub.common.pojo.vo.ProjectVO;
 import com.liubusi.packagehub.core.mapper.DocMapper;
 import com.liubusi.packagehub.common.pojo.vo.DocVO;
 import com.liubusi.packagehub.core.mapper.UserAuthMapper;
@@ -43,27 +44,23 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
 
     @Override
     public List<DocVO> listNextChildNode(Long id, Long userId) {
-        //先查询redis中是否存在数据列表
         List<Doc> docList = null;
         List<DocVO> docVOList = new ArrayList<>();
-//        try {
-//            docList = (List<Doc>)redisTemplate.opsForValue().get("packagehub:core:doc:" + id);
-//            if (docList != null) {
-//                log.info("从redis中取值");
-//                return docList;
-//            }
-//        } catch (Exception e) {
-//            log.error("redis服务异常：" + ExceptionUtils.getStackTrace(e));;//此处不抛出异常，继续执行后面的代码
-//        }
+
+        //先查询redis中是否存在数据列表
+        try {
+            docVOList = (List<DocVO>)redisTemplate.opsForValue().get("packagehub:core:docVO:" + id);
+            if (docList != null) {
+                log.info("从redis中取值");
+                return docVOList;
+            }
+        } catch (Exception e) {
+            log.error("redis服务异常：" + ExceptionUtils.getStackTrace(e));;//此处不抛出异常，继续执行后面的代码
+        }
 
         log.info("从数据库中取值");
-        docList = docMapper.listNextChildNode(id, userId);
-
-        docList.forEach(doc -> {
-            DocVO docVO1 = new DocVO();
-            BeanUtils.copyProperties(doc,docVO1);
-            docVOList.add(docVO1);
-        });
+        docVOList = docMapper.listNextChildNode(id, userId);
+        
         docVOList.forEach(docVO -> {
             if (docVO.getType().equals("release_version")) {
                 docVO.setHasChildren(false);
@@ -75,7 +72,7 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
 
         //将数据存入redis
         try {
-            redisTemplate.opsForValue().set("packagehub:core:doc:" + id, docList, 5, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set("packagehub:core:docVO:" + id, docList, 5, TimeUnit.MINUTES);
             log.info("数据存入redis");
         } catch (Exception e) {
             log.error("redis服务器异常：" + ExceptionUtils.getStackTrace(e));//此处不抛出异常，继续执行后面的代码
@@ -86,7 +83,6 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
 
     @Override
     public String listParentNode(Long id) {
-
         log.info("从数据库中取值");
         List<DocVO> docVOList = docMapper.listParentNode(id);
         String result = "";
@@ -107,15 +103,18 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
         List<DocVO> result = docMapper.listAllChildNode(id);
         List<DocVO> finalResult = new ArrayList<>();
 
-        for (DocVO firstDocVO : result) {
-            System.out.println("========"+firstDocVO);
-            for (DocVO secondDocVO : result) {
-                if (firstDocVO.getId().equals(secondDocVO.getParentId())) {
-                    firstDocVO.getChildren().add(secondDocVO);
+        for (DocVO docVO1 : result) {
+            if (docVO1.getType().equals("release_version")) {
+                continue;
+            } else {
+                for (DocVO docVO2 : result) {
+                    if (docVO1.getId().equals(docVO2.getParentId())) {
+                        docVO1.getChildren().add(docVO2);
+                    }
                 }
-            }
-            if (firstDocVO.getParentId().equals(id)) {
-                finalResult.add(firstDocVO);
+                if (docVO1.getParentId().equals(id)) {
+                    finalResult.add(docVO1);
+                }
             }
         }
         return finalResult;

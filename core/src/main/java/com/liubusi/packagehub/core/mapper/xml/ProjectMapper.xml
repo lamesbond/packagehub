@@ -2,22 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.liubusi.packagehub.core.mapper.ProjectMapper">
 
-    <select id="listNextChildNode" resultType="com.liubusi.packagehub.common.pojo.entity.Project">
-#         DROP PROCEDURE IF EXISTS listNextChildNode;
-#         create procedure listNextChildNode(in proid bigint,in userid bigint)
-#         BEGIN
-# 	declare role varchar(255);
-#         select roles into role from user where id = userid;
-#         if (userid = 0) then
-#         select * from project where parent_id = proid and pub_status = 1;
-#         elseif (role = 'admin') then
-#         select * from project where parent_id = proid;
-#         else
-#         select * from project where parent_id = proid and id in (select project_id from user_auth where user_id = userid);
-#         end if;
-#         END
+    <select id="listNextChildNode" resultType="com.liubusi.packagehub.common.pojo.vo.ProjectVO">
+--         DROP PROCEDURE IF EXISTS listNextProjectChildNode;
+--         create procedure listNextProjectChildNode(in proid bigint,in userid bigint)
+--         BEGIN
+--  	        declare role varchar(255);
+--             select roles into role from user where id = userid;
+--             if (userid = 0) then
+--                 select * from project where parent_id = proid and pub_status = 1;
+--             elseif (role = 'admin') then
+--                 select * from project where parent_id = proid;
+--             else
+--                 select * from project where parent_id = proid and id in (select project_id from user_auth where user_id = userid);
+--             end if;
+--         END
 
-        CALL listNextChildNode(#{id},#{userId});
+        CALL listNextProjectChildNode(#{id},#{userId});
     </select>
 
     <select id="listParentNode" resultType="com.liubusi.packagehub.common.pojo.vo.ProjectVO">
@@ -51,7 +51,6 @@
             ) T2, project T3
         WHERE FIND_IN_SET(T3.id, T2._ids)
           and id != #{id}
-        ORDER BY level, position
         ;
     </select>
 

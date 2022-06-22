@@ -41,39 +41,31 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
 
     @Override
     public List<ProjectVO> listNextChildNode(Long id, Long userId) {
-        //先查询redis中是否存在数据列表
         List<Project> projectList = null;
         List<ProjectVO> projectVOList = new ArrayList<>();
-//        try {
-//            projectList = (List<Project>)redisTemplate.opsForValue().get("packagehub:core:project:" + id);
-//            if (projectList != null) {
-//                log.info("从redis中取值");
-//                return projectList;
-//            }
-//        } catch (Exception e) {
-//            log.error("redis服务异常：" + ExceptionUtils.getStackTrace(e));;//此处不抛出异常，继续执行后面的代码
-//        }
+
+        //先查询redis中是否存在数据列表
+        try {
+            projectVOList = (List<ProjectVO>)redisTemplate.opsForValue().get("packagehub:core:projectVOList:" + id);
+            if (projectVOList != null) {
+                log.info("从redis中取值");
+                return projectVOList;
+            }
+        } catch (Exception e) {
+            log.error("redis服务异常：" + ExceptionUtils.getStackTrace(e));;//此处不抛出异常，继续执行后面的代码
+        }
 
         log.info("从数据库中取值");
-        projectList = projectMapper.listNextChildNode(id, userId);
+        projectVOList = projectMapper.listNextChildNode(id, userId);
 
-        projectList.forEach(project -> {
-            ProjectVO projectVO1 = new ProjectVO();
-            BeanUtils.copyProperties(project,projectVO1);
-            projectVOList.add(projectVO1);
-        });
-        projectVOList.forEach(projectVO -> {
-//            if (projectVO.getType().equals("release_version")) {
-//                projectVO.setHasChildren(false);
-//            } else {
-                boolean hasChildren = this.hasChildren(projectVO.getId());
-                projectVO.setHasChildren(hasChildren);
-//            }
+        projectVOList.forEach(projectVO1 -> {
+            boolean hasChildren = this.hasChildren(projectVO1.getId());
+            projectVO1.setHasChildren(hasChildren);
         });
 
         //将数据存入redis
         try {
-            redisTemplate.opsForValue().set("packagehub:core:project:" + id, projectList, 5, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set("packagehub:core:projectVOList:" + id, projectVOList, 5, TimeUnit.MINUTES);
             log.info("数据存入redis");
         } catch (Exception e) {
             log.error("redis服务器异常：" + ExceptionUtils.getStackTrace(e));//此处不抛出异常，继续执行后面的代码
@@ -84,8 +76,6 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
 
     @Override
     public String listParentNode(Long id) {
-
-        log.info("从数据库中取值");
         List<ProjectVO> projectVOList = projectMapper.listParentNode(id);
         String result = "";
 
@@ -96,7 +86,6 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
                 result += projectVO.getName() + "-";
             }
         }
-
         return result;
     }
 
@@ -104,16 +93,19 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     public List<ProjectVO> listAllChildNode(Long id) {
         List<ProjectVO> result = projectMapper.listAllChildNode(id);
         List<ProjectVO> finalResult = new ArrayList<>();
-
-        for (ProjectVO firstprojectVO : result) {
-            System.out.println("========"+firstprojectVO);
-            for (ProjectVO secondprojectVO : result) {
-                if (firstprojectVO.getId().equals(secondprojectVO.getParentId())) {
-                    firstprojectVO.getChildren().add(secondprojectVO);
+        
+        for (ProjectVO projectVO1 : result) {
+            if (projectVO1.getType().equals("release_version")) {
+                continue;
+            } else {
+                for (ProjectVO projectVO2 : result) {
+                    if (projectVO1.getId().equals(projectVO2.getParentId())) {
+                        projectVO1.getChildren().add(projectVO2);
+                    }
                 }
-            }
-            if (firstprojectVO.getParentId().equals(id)) {
-                finalResult.add(firstprojectVO);
+                if (projectVO1.getParentId().equals(id)) {
+                    finalResult.add(projectVO1);
+                }
             }
         }
         return finalResult;
@@ -126,22 +118,14 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
 
         Long id = projectVO.getId();
         Long userId = projectVO.getUserId();
-//        Long parentId = projectVO.getParentId();
-//        String name = projectVO.getName();
-//        String department = projectVO.getDepartment();
-//        String description = projectVO.getDescription();
         String type = projectVO.getType();
-//        String pubStatus = projectVO.getPubStatus();
-//        String url = projectVO.getUrl();
         List<Long> projectList = new ArrayList<>();
         projectList.add(id);
 
         if (type.equals("file")) {
             projectMapper.insert(project);
-//            projectMapper.saveFile(id, name, parentId, type, url);
         } else if (type.equals("project") || type.equals("category")){
             projectMapper.insert(project);
-//            projectMapper.saveCategory(id, name, parentId, department, description, pubStatus);
             userAuthMapper.authProject(userId, projectList);
         } else {
             log.info("不知所措");

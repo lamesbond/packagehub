@@ -1,6 +1,7 @@
 package com.liubusi.packagehub.common.pojo.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @ApiModel(description="DocVO对象")
 public class DocVO implements Serializable{

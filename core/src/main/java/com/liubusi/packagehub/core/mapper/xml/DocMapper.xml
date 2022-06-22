@@ -2,17 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.liubusi.packagehub.core.mapper.DocMapper">
 
-    <select id="listNextChildNode" resultType="com.liubusi.packagehub.common.pojo.entity.Doc">
-        select * from doc where parent_id = #{id}
-        <choose>
-            <when test="userId==222">
-            </when>
-            <otherwise>
-                <if test="id==0">
-                    and id in (select doc_id from user_auth where user_id = #{userId})
-                </if>
-            </otherwise>
-        </choose>
+    <select id="listNextChildNode" resultType="com.liubusi.packagehub.common.pojo.vo.DocVO">
+--         DROP PROCEDURE IF EXISTS listNextDocChildNode;
+--         create procedure listNextDocChildNode(in docid bigint,in userid bigint)
+--         BEGIN
+--  	        declare role varchar(255);
+--             select roles into role from user where id = userid;
+--             if (userid = 0) then
+--                 select * from doc where parent_id = docid and pub_status = 1;
+--             elseif (role = 'admin') then
+--                 select * from doc where parent_id = docid;
+--             else
+--                 select * from doc where parent_id = docid and id in (select doc_id from user_auth where user_id = userid);
+--             end if;
+--         END
+
+        CALL listNextDocChildNode(#{id},#{userId});
     </select>
 
     <select id="listParentNode" resultType="com.liubusi.packagehub.common.pojo.vo.DocVO">
@@ -50,10 +55,6 @@
         ;
     </select>
 
-    <insert id="saveCategory">
-        insert into doc (`id`, `title`, `parent_id`, `department`, `description`, `type`, `pub_status`)
-        values (#{id}, #{title}, #{parentId}, #{department}, #{description}, #{type}, #{pubStatus})
-    </insert>
     <insert id="saveMenu">
         INSERT INTO doc (`id`, `title`, `parent_id`, `type`, `position`) VALUES (
         #{id}, #{title}, #{parentId}, #{type},
