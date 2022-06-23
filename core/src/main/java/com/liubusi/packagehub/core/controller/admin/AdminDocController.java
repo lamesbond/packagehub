@@ -4,12 +4,15 @@ import com.liubusi.packagehub.common.result.Result;
 import com.liubusi.packagehub.common.pojo.entity.Doc;
 import com.liubusi.packagehub.common.pojo.vo.DocVO;
 import com.liubusi.packagehub.core.service.DocService;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -30,11 +33,24 @@ public class AdminDocController {
     @Resource
     private DocService docService;
 
+    @Resource
+    private MeterRegistry registry;
+
+    private Counter counter_listNextChildNode;
+    private Counter counter_listParentNode;
+
+    @PostConstruct
+    private void init(){
+        counter_listNextChildNode = registry.counter("app_requests_docnode_count", "method", "AdminDocController.core");
+        counter_listParentNode = registry.counter("app_requests_docnode_count", "method", "AdminDocController.index");
+    }
+
     @ApiOperation("获取id下的下一级子节点，不递归")
     @GetMapping("/listNextChildNode/{id}/{userId}")
-    public Result listChildNodeById(@ApiParam(value = "节点id", required = true)
+    public Result listNextChildNode(@ApiParam(value = "节点id", required = true)
             @PathVariable Long id, @PathVariable Long userId){
         List<DocVO> docVOList = docService.listNextChildNode(id, userId);
+        counter_listNextChildNode.increment();
         return Result.ok().data("childList", docVOList);
     }
 
@@ -43,10 +59,11 @@ public class AdminDocController {
     public Result listParentNode(@ApiParam(value = "节点id", required = true)
                                        @PathVariable Long id){
         String result = docService.listParentNode(id);
+        counter_listParentNode.increment();
         return Result.ok().data("docPath", result);
     }
 
-    @ApiOperation("根据id递归获取文档目录")
+    @ApiOperation("根据id递归获取所有子节点")
     @GetMapping("/listAllChildNode/{id}")
     public Result listAllChildNode(
             @ApiParam(value = "文档id", required = true)
@@ -73,7 +90,7 @@ public class AdminDocController {
         return Result.ok().message("新增成功");
     }
 
-    @ApiOperation("递归删除文档所有子集")
+    @ApiOperation("递归删除文档所有子节点")
     @DeleteMapping("/remove/{id}")
     public Result remove(
             @ApiParam(value = "文档id", required = true)

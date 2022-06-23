@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.List;
 
-@Api(tags = "文档获取")
+@Api(tags = "项目文档获取")
 @RestController
 @RequestMapping("/api/core/doc")
 @Slf4j
@@ -51,7 +51,7 @@ public class ApiDocController {
         return Result.ok().data("childList", result);
     }
 
-    @ApiOperation("根据id获取项目名，内容等")
+    @ApiOperation("根据id获取文档名，内容等")
     @GetMapping("/getOne/{id}")
     public Result getOne(
             @ApiParam(value = "项目id", required = true)

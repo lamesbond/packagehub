@@ -22,7 +22,7 @@ import java.util.List;
  * @author liubusi
  * @since 2022-05-22
  */
-@Api(tags = "项目包管理")
+@Api(tags = "项目文件管理")
 @RestController
 @RequestMapping("/admin/core/project")
 @Slf4j
@@ -65,12 +65,11 @@ public class AdminProjectController {
         return Result.ok().message("新增成功");
     }
 
-    @ApiOperation("递归删除项目所有子集")
+    @ApiOperation("递归删除项目所有子节点")
     @DeleteMapping("/remove/{id}")
     public Result remove(
             @ApiParam(value = "项目id", required = true)
             @PathVariable Long id) {
-        log.info("即将删除此界定啊以及所有细节点：" + id);
         projectService.remove(id);
         return Result.ok().message("删除成功");
     }

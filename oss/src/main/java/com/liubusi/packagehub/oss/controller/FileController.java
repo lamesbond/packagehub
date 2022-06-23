@@ -32,13 +32,11 @@ public class FileController {
             @RequestParam("file") MultipartFile file,
 
             @ApiParam(value = "模块", required = true)
-            @RequestParam("module") String module)  {
-
+            @RequestParam("module") String module) {
         try {
             InputStream inputStream = file.getInputStream();
             String originalFilename = file.getOriginalFilename();
             String uploadUrl = fileService.upload(inputStream, module, originalFilename);
-
             //返回r对象
             return Result.ok().message("文件上传成功").data("url", uploadUrl);
         } catch (IOException e) {
